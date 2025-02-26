@@ -5,17 +5,18 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+class User implements UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
@@ -25,12 +26,10 @@ class User
     private ?bool $isVerified = false;
 
     #[ORM\Column(type: "json")]
-private array $roles = ["ROLE_USER"];
+    private array $roles = ["ROLE_USER"];
 
-#[ORM\Column(type: "datetime", options: ["default" => "CURRENT_TIMESTAMP"])]
-private ?\DateTimeInterface $createdAt = null;
-
-
+    #[ORM\Column(type: "datetime", options: ["default" => "CURRENT_TIMESTAMP"])]
+    private ?\DateTimeInterface $createdAt = null;
 
     /**
      * @var Collection<int, Purchase>
@@ -54,10 +53,10 @@ private ?\DateTimeInterface $createdAt = null;
     {
         $this->purchases = new ArrayCollection();
         $this->certifications = new ArrayCollection();
+        $this->lessonValidations = new ArrayCollection();
         $this->roles = ["ROLE_USER"];
         $this->createdAt = new \DateTimeImmutable();
         $this->isVerified = false;
-        $this->lessonValidations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -73,7 +72,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
@@ -85,19 +83,17 @@ private ?\DateTimeInterface $createdAt = null;
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    public function getRoles(): ?array
+    public function getRoles(): array
     {
         return $this->roles;
     }
 
-    public function setRoles(string $roles): static
+    public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
@@ -109,7 +105,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
-
         return $this;
     }
 
@@ -121,8 +116,18 @@ private ?\DateTimeInterface $createdAt = null;
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
+    }
+
+    // Méthodes obligatoires pour UserInterface
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // Cette méthode est requise par UserInterface, mais elle peut rester vide
     }
 
     /**
@@ -139,19 +144,16 @@ private ?\DateTimeInterface $createdAt = null;
             $this->purchases->add($purchase);
             $purchase->setUser($this);
         }
-
         return $this;
     }
 
     public function removePurchase(Purchase $purchase): static
     {
         if ($this->purchases->removeElement($purchase)) {
-            // set the owning side to null (unless already changed)
             if ($purchase->getUser() === $this) {
                 $purchase->setUser(null);
             }
         }
-
         return $this;
     }
 
@@ -169,19 +171,16 @@ private ?\DateTimeInterface $createdAt = null;
             $this->certifications->add($certification);
             $certification->setUser($this);
         }
-
         return $this;
     }
 
     public function removeCertification(Certification $certification): static
     {
         if ($this->certifications->removeElement($certification)) {
-            // set the owning side to null (unless already changed)
             if ($certification->getUser() === $this) {
                 $certification->setUser(null);
             }
         }
-
         return $this;
     }
 
@@ -199,19 +198,16 @@ private ?\DateTimeInterface $createdAt = null;
             $this->lessonValidations->add($lessonValidation);
             $lessonValidation->setUser($this);
         }
-
         return $this;
     }
 
     public function removeLessonValidation(LessonValidation $lessonValidation): static
     {
         if ($this->lessonValidations->removeElement($lessonValidation)) {
-            // set the owning side to null (unless already changed)
             if ($lessonValidation->getUser() === $this) {
                 $lessonValidation->setUser(null);
             }
         }
-
         return $this;
     }
 }
