@@ -3,3 +3,10 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+# Redirection après la connexion
+app_login_redirect:
+    path: /login-success
+    controller: Symfony\Bundle\SecurityBundle\Controller\RedirectController
+    defaults:
+        route: app_home
