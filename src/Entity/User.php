@@ -6,10 +6,11 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -31,21 +32,12 @@ class User implements UserInterface
     #[ORM\Column(type: "datetime", options: ["default" => "CURRENT_TIMESTAMP"])]
     private ?\DateTimeInterface $createdAt = null;
 
-    /**
-     * @var Collection<int, Purchase>
-     */
     #[ORM\OneToMany(targetEntity: Purchase::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $purchases;
 
-    /**
-     * @var Collection<int, Certification>
-     */
     #[ORM\OneToMany(targetEntity: Certification::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $certifications;
 
-    /**
-     * @var Collection<int, LessonValidation>
-     */
     #[ORM\OneToMany(targetEntity: LessonValidation::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $lessonValidations;
 
@@ -119,7 +111,6 @@ class User implements UserInterface
         return $this;
     }
 
-    // Méthodes obligatoires pour UserInterface
     public function getUserIdentifier(): string
     {
         return $this->email;
@@ -127,12 +118,8 @@ class User implements UserInterface
 
     public function eraseCredentials(): void
     {
-        // Cette méthode est requise par UserInterface, mais elle peut rester vide
     }
 
-    /**
-     * @return Collection<int, Purchase>
-     */
     public function getPurchases(): Collection
     {
         return $this->purchases;
@@ -157,9 +144,6 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, Certification>
-     */
     public function getCertifications(): Collection
     {
         return $this->certifications;
@@ -184,9 +168,6 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, LessonValidation>
-     */
     public function getLessonValidations(): Collection
     {
         return $this->lessonValidations;
@@ -211,3 +192,4 @@ class User implements UserInterface
         return $this;
     }
 }
+
