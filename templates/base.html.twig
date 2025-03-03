@@ -1,18 +1,48 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Bienvenu!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-            
-        {% endblock %}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Bienvenu!{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ asset('styles/home.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
+    <link rel="icon" href="favicon.ico">
+    {% block stylesheets %}{% endblock %}
+</head>
 
-        {% block javascripts %}
-            
-        {% endblock %}
-    </head>
-    <body>
+<body>
+    <!-- HEADER -->
+    <header class="bg-primary text-white py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="m-0">Knowledge Learning</h1>
+            <nav>
+                <ul class="nav">
+                    <li class="nav-item"><a href="{{ path('app_home') }}" class="nav-link text-white">Accueil</a></li>
+                    {% if not app.user %}
+                        <li class="nav-item"><a href="{{ path('app_register') }}" class="nav-link text-white">Inscription</a></li>
+                        <li class="nav-item"><a href="{{ path('app_login') }}" class="nav-link text-white">Connexion</a></li>
+                    {% else %}
+                        <li class="nav-item"><a href="{{ path('app_shop') }}" class="nav-link text-white">Boutique</a></li>
+                        <li class="nav-item"><a href="{{ path('app_cart') }}" class="nav-link text-white">Panier</a></li>
+                        <li class="nav-item"><a href="{{ path('app_logout') }}" class="nav-link text-white">Déconnexion</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main>
         {% block body %}{% endblock %}
-    </body>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <p>&copy; 2024 Knowledge Learning. Tous droits réservés.</p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

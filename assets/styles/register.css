@@ -1,0 +1,92 @@
+/* PAGE D'INSCRIPTION */
+.container {
+    height: 100vh; /* Prend toute la hauteur de l'écran */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f8fc; /* Couleur douce */
+}
+
+/* CONTAINER DU FORMULAIRE */
+.register-box {
+    width: 400px;
+    padding: 25px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre légère */
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+}
+
+/* TITRE */
+.register-box h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #0074c7;
+}
+
+/* CHAMPS DU FORMULAIRE */
+.register-box .form-group {
+    margin-bottom: 15px;
+}
+
+.register-box label {
+    font-weight: bold;
+    color: #384050;
+}
+
+.register-box .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* BOUTON DE SOUMISSION */
+.register-box .btn-primary {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0074c7;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.register-box .btn-primary:hover {
+    background-color: #00497c;
+}
+
+/* MESSAGE DE CONFIRMATION */
+.alert-success {
+    text-align: center;
+    color: #82b864;
+    font-weight: bold;
+}
+
+/* LIEN DE CONNEXION */
+.register-box .already-registered {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.register-box .already-registered a {
+    color: #cd2c2e;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.register-box .already-registered a:hover {
+    text-decoration: underline;
+}
+
+/* ADAPTATION RESPONSIVE */
+@media (max-width: 768px) {
+    .register-box {
+        width: 90%;
+    }
+}

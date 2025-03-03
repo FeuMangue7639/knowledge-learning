@@ -10,6 +10,8 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+
 
 class RegistrationFormType extends AbstractType
 {
@@ -17,14 +19,20 @@ class RegistrationFormType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class)
-            ->add('plainPassword', RepeatedType::class, [
-                'type' => PasswordType::class,
-                'mapped' => false,
-                'first_options'  => ['label' => 'Password'],
-                'second_options' => ['label' => 'Repeat Password'],
+            ->add('username', TextType::class, [
+                'label' => 'Nom utilisateur :',
+                'attr' => ['class' => 'form-control'],
+                'required' => true,
             ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'Register'
+            ->add('address', TextType::class, [
+                'label' => 'Adresse de livraison :',
+                'attr' => ['class' => 'form-control'],
+                'required' => false, 
+            ])
+            ->add('plainPassword', PasswordType::class, [
+                'label' => 'Mot de passe :',
+                'mapped' => false,
+                'attr' => ['class' => 'form-control'],
             ]);
     }
 
