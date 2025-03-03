@@ -17,20 +17,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(type: "string", length: 180, unique: true)]
+    private ?string $username = null;
+
     #[ORM\Column(length: 255, unique: true)]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: "boolean")]
     private ?bool $isVerified = false;
 
     #[ORM\Column(type: "json")]
     private array $roles = ["ROLE_USER"];
 
     #[ORM\Column(type: "datetime", options: ["default" => "CURRENT_TIMESTAMP"])]
-    private ?\DateTimeInterface $createdAt = null;
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $address = null;
 
     #[ORM\OneToMany(targetEntity: Purchase::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $purchases;
@@ -54,6 +60,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+        return $this;
     }
 
     public function getEmail(): ?string
@@ -111,6 +128,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): self
+    {
+        $this->address = $address;
+        return $this;
+    }
+
     public function getUserIdentifier(): string
     {
         return $this->email;
@@ -118,6 +146,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
+        // Cette méthode peut rester vide
     }
 
     public function getPurchases(): Collection
@@ -192,4 +221,3 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 }
-

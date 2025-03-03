@@ -1,33 +1,54 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Knowledge Learning{% endblock %}</title>
-</head>
-<body>
-    <header>
-    <nav>
-        <ul>
-            <li><a href="{{ path('app_home') }}">Accueil</a></li>
+{% extends 'base.html.twig' %}
 
-            {% if not app.user %}
-                <li><a href="{{ path('app_register') }}">Inscription</a></li>
-                <li><a href="{{ path('app_login') }}">Connexion</a></li>
-            {% else %}
-                <li><a href="{{ path('app_shop') }}">Boutique</a></li>
-                <li><a href="{{ path('app_cart') }}">Panier</a></li>
-                <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+{% block title %}Knowledge Learning - Accueil{% endblock %}
 
-            {% endif %}
-        </ul>
-    </nav>
-</header>
+{% block body %}
+    <!-- HERO SECTION -->
+    <section class="hero bg-dark text-white text-center py-5">
+        <div class="container">
+            <h1 class="fw-bold">Bienvenue sur Knowledge Learning</h1>
+            <p class="lead">Apprenez en ligne à votre rythme avec nos formations de qualité !</p>
+            <a href="{{ path('app_shop') }}" class="btn btn-light btn-lg mt-3">Découvrir nos cours</a>
+        </div>
+    </section>
 
+    <!-- SECTION A PROPOS -->
+    <section class="container my-5">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2>Pourquoi choisir Knowledge Learning ?</h2>
+                <p class="fs-5">
+                    Nous proposons des formations interactives dans divers domaines :
+                    <strong>musique, informatique, jardinage et cuisine.</strong>
+                </p>
+                <a href="{{ path('app_register') }}" class="btn btn-primary">Créer un compte</a>
+            </div>
+            <div class="col-md-6">
+                <img src="/images/learning.png" alt="E-learning" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </section>
 
-    <main>
-        {% block body %}{% endblock %}
-    </main>
-</body>
-</html>
-
+    <!-- SECTION COURS POPULAIRES -->
+    <section class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center mb-4 text-primary">Nos Cours Populaires</h2>
+            <div class="row">
+                {% for course in courses %}
+                    <div class="col-md-4">
+                        <div class="card mb-4 shadow-sm">
+                            <img src="/images/{{ course.image }}" class="card-img-top" alt="{{ course.title }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ course.title }}</h5>
+                                <p class="card-text">{{ course.description|slice(0, 100) ~ '...' }}</p>
+                                <a href="{{ path('app_course_detail', {'id': course.id}) }}" class="btn btn-primary">Voir le cours</a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="text-center">Aucun cours disponible pour le moment.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
