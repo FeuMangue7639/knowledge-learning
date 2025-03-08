@@ -3,19 +3,48 @@
 {% block title %}Connexion{% endblock %}
 
 {% block body %}
-    <h1>Connexion</h1>
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="login-box p-5 rounded shadow bg-white w-50 border border-dark">
+        <h2 class="text-center mb-4">Se connecter</h2>
 
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+        <!-- ✅ Affichage du message flash après inscription -->
+        {% for message in app.flashes('info') %}
+            <div class="alert alert-info text-center mt-3">
+                {{ message }}
+            </div>
+        {% endfor %}
 
-    <form method="post">
-        <label for="username">Email</label>
-        <input type="email" name="_username" id="username" value="{{ last_username }}" required>
+        {% if error %}
+            <div class="alert alert-danger">
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
 
-        <label for="password">Mot de passe</label>
-        <input type="password" name="_password" id="password" required>
+        <form method="post">
+            <div class="form-group">
+                <label for="username">Adresse mail :</label>
+                <input type="email" id="username" name="_username" class="form-control" required autofocus>
+            </div>
 
-        <button type="submit">Se connecter</button>
-    </form>
+            <div class="form-group">
+                <label for="password">Mot de passe :</label>
+                <input type="password" id="password" name="_password" class="form-control" required>
+            </div>
+
+            <div class="form-check my-2">
+                <input type="checkbox" id="remember_me" name="_remember_me" class="form-check-input">
+                <label class="form-check-label" for="remember_me">Se souvenir de moi</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-3">Se connecter</button>
+        </form>
+
+        <div class="divider my-3"></div>
+        <div class="already-registered text-center">
+            <p>Pas encore inscrit ?</p>
+            <a href="{{ path('app_register') }}" class="btn btn-secondary w-100">Créer un compte</a>
+        </div>
+    </div>
+</div>
 {% endblock %}
+

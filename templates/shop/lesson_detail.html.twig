@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ lesson.title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card shadow p-4">
+        <h2 class="text-primary">{{ lesson.title }}</h2>
+        <p>{{ lesson.content }}</p>
+        <p class="text-success fw-bold">{{ lesson.price }} €</p>
+
+        <a href="{{ path('app_shop') }}" class="btn btn-secondary mt-3">Retour à la boutique</a>
+    </div>
+</div>
+{% endblock %}
