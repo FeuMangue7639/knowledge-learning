@@ -1,0 +1,84 @@
+/* PAGE DE CONNEXION */
+.container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f1f8fc;
+}
+
+/* CONTAINER DU FORMULAIRE */
+.login-box {
+    width: 500px;
+    padding: 30px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid #ddd;
+}
+
+/* TITRE */
+.login-box h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #0074c7;
+}
+
+/* CHAMPS DU FORMULAIRE */
+.login-box .form-group {
+    margin-bottom: 15px;
+}
+
+.login-box label {
+    font-weight: bold;
+    color: #384050;
+}
+
+.login-box .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* BOUTON DE SOUMISSION */
+.login-box .btn-primary {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0074c7;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-box .btn-primary:hover {
+    background-color: #00497c;
+}
+
+/* LIEN DE CREATION DE COMPTE */
+.login-box .already-registered {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.login-box .already-registered a {
+    color: #cd2c2e;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-box .already-registered a:hover {
+    text-decoration: underline;
+}
+
+/* ADAPTATION RESPONSIVE */
+@media (max-width: 768px) {
+    .login-box {
+        width: 90%;
+    }
+}

@@ -1,11 +1,24 @@
-<h1>Hi! Please confirm your email!</h1>
+<h1>Bienvenue sur Knowledge Learning !</h1>
 
 <p>
-    Please confirm your email address by clicking the following link: <br><br>
-    <a href="{{ signedUrl|raw }}">Confirm my Email</a>.
-    This link will expire in {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+    Merci de vous être inscrit ! Avant de pouvoir accéder à votre compte, vous devez confirmer votre adresse e-mail en cliquant sur le lien ci-dessous :
+</p>
+
+<p style="text-align: center; margin-top: 20px;">
+    <a href="{{ signedUrl|raw }}" style="padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">
+        Confirmer mon email
+    </a>
 </p>
 
 <p>
-    Cheers!
+    Ce lien expirera dans {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
 </p>
+
+<p>
+    Si vous n'avez pas créé de compte, ignorez cet e-mail.
+</p>
+
+<p>
+    Merci et à bientôt !
+</p>
+

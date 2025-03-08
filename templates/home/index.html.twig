@@ -37,11 +37,13 @@
                 {% for course in courses %}
                     <div class="col-md-4">
                         <div class="card mb-4 shadow-sm">
-                            <img src="/images/{{ course.image }}" class="card-img-top" alt="{{ course.title }}">
                             <div class="card-body">
                                 <h5 class="card-title">{{ course.title }}</h5>
                                 <p class="card-text">{{ course.description|slice(0, 100) ~ '...' }}</p>
-                                <a href="{{ path('app_course_detail', {'id': course.id}) }}" class="btn btn-primary">Voir le cours</a>
+                                <p class="text-success fw-bold">{{ course.price }} €</p>
+                                <a href="{{ path('app_course_detail', {'id': course.id}) }}" class="btn btn-primary">
+                                    Voir le cours
+                                </a>
                             </div>
                         </div>
                     </div>
