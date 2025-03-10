@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('styles/home.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
-      <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/global.css') }}"> {# ✅ Ajout d'un fichier CSS global si besoin #}
     <link rel="icon" href="favicon.ico">
     {% block stylesheets %}{% endblock %}
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100"> {# ✅ Ajout de flexbox pour fixer le footer #}
+
     <!-- HEADER -->
     <header class="bg-primary text-white py-3">
         <div class="container d-flex justify-content-between align-items-center">
@@ -33,13 +35,13 @@
         </div>
     </header>
 
-    <!-- CONTENU PRINCIPAL -->
-    <main>
+    <!-- ✅ CONTENU PRINCIPAL (prend tout l'espace libre) -->
+    <main class="flex-grow-1">
         {% block body %}{% endblock %}
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-dark text-white text-center py-4 mt-5">
+    <!-- ✅ FOOTER FIXÉ EN BAS -->
+    <footer class="bg-dark text-white text-center py-4 mt-auto">
         <p>&copy; 2024 Knowledge Learning. Tous droits réservés.</p>
     </footer>
 

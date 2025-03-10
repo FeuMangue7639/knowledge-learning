@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="container mt-5">
-    <h2 class="text-center text-primary mb-4">Notre Boutique</h2>
+    <h2 class="text-center text-primary mb-4">Cours disponible</h2>
 
     <div class="row">
         <!-- Affichage des cours -->
@@ -19,9 +19,6 @@
                         <!-- Boutons Voir le Cours et Ajouter au Panier -->
                         <a href="{{ path('app_course_detail', {'id': course.id}) }}" class="btn btn-info w-100 mb-2">
                             Voir le cours
-                        </a>
-                        <a href="{{ path('app_cart_add', {'id': course.id}) }}" class="btn btn-primary w-100">
-                            Ajouter au panier
                         </a>
                     </div>
                 </div>
@@ -48,9 +45,6 @@
                         <!-- Boutons Voir la Leçon et Ajouter au Panier -->
                         <a href="{{ path('app_lesson_detail', {'id': lesson.id}) }}" class="btn btn-info w-100 mb-2">
                             Voir la leçon
-                        </a>
-                        <a href="{{ path('app_cart_add', {'id': lesson.id}) }}" class="btn btn-primary w-100">
-                            Ajouter au panier
                         </a>
                     </div>
                 </div>
