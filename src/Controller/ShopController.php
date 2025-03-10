@@ -26,15 +26,17 @@ class ShopController extends AbstractController
     #[Route('/shop/course/{id}', name: 'app_course_detail')]
     public function courseDetail(Course $course): Response
     {
+        // ✅ On récupère les leçons associées au cours
         return $this->render('shop/detail.html.twig', [
             'course' => $course,
+            'lessons' => $course->getLessons(), // Envoie les leçons du cours
         ]);
     }
 
     #[Route('/shop/lesson/{id}', name: 'app_lesson_detail')]
     public function lessonDetail(Lesson $lesson): Response
     {
-        return $this->render('shop/lesson_detail.html.twig', [
+        return $this->render('shop/detail.html.twig', [
             'lesson' => $lesson,
         ]);
     }

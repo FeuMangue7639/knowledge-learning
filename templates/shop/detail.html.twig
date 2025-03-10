@@ -1,25 +1,81 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ course.title }}{% endblock %}
+{% block title %}Détail - {{ course.title ?? lesson.title }}{% endblock %}
 
 {% block body %}
 <div class="container mt-5">
     <div class="card shadow p-4">
-        <h2 class="text-primary">{{ course.title }}</h2>
-        <p class="text-muted">{{ course.category }}</p>
-        <p>{{ course.description }}</p>
-        <p class="text-success fw-bold">{{ course.price }} €</p>
-
-        <h4 class="mt-4">Leçons incluses :</h4>
-        <ul>
-            {% for lesson in course.lessons %}
-                <li>{{ lesson.title }} - <span class="text-success">{{ lesson.price }} €</span></li>
+        <h2 class="text-center text-primary">
+            {% if course is defined %}
+                {{ course.title }}
+            {% elseif lesson is defined %}
+                {{ lesson.title }}
             {% else %}
-                <p class="text-muted">Aucune leçon disponible pour ce cours.</p>
-            {% endfor %}
-        </ul>
+                Détail non disponible
+            {% endif %}
+        </h2>
 
-        <a href="{{ path('app_shop') }}" class="btn btn-secondary mt-3">Retour à la boutique</a>
+        <p class="mt-3"><strong>Catégorie :</strong> 
+            {% if course is defined %}
+                {{ course.category }}
+            {% else %}
+                Leçon individuelle
+            {% endif %}
+        </p>
+
+        <p>
+            {% if course is defined %}
+                {{ course.description }}
+            {% elseif lesson is defined %}
+                {{ lesson.content }}
+            {% else %}
+                Description non disponible.
+            {% endif %}
+        </p>
+
+        <p class="text-success fw-bold">
+            Prix : 
+            {% if course is defined %}
+                {{ course.price }} €
+            {% elseif lesson is defined %}
+                {{ lesson.price }} €
+            {% else %}
+                Gratuit
+            {% endif %}
+        </p>
+
+        <!-- ✅ Liste des leçons associées si on est sur un cours -->
+        {% if course is defined and course.lessons is not empty %}
+            <h3 class="mt-4">Leçons incluses :</h3>
+            <ul class="list-group">
+                {% for lesson in course.lessons %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{{ path('app_lesson_detail', {'id': lesson.id}) }}" class="text-decoration-none">
+                            {{ lesson.title }}
+                        </a>
+                        <span class="badge bg-primary">{{ lesson.price ?? 'Inclus' }} €</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% elseif course is defined %}
+            <p class="text-muted">Aucune leçon disponible pour ce cours.</p>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            {% if course is defined %}
+                <a href="{{ path('app_cart_add', {'id': course.id, 'type': 'course'}) }}" class="btn btn-success">
+                    Ajouter au panier
+                </a>
+            {% elseif lesson is defined %}
+                <a href="{{ path('app_cart_add', {'id': lesson.id, 'type': 'lesson'}) }}" class="btn btn-success">
+                    Ajouter au panier
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="{{ path('app_shop') }}" class="btn btn-secondary">Retour à la boutique</a>
+        </div>
     </div>
 </div>
 {% endblock %}

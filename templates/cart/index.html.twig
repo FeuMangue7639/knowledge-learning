@@ -3,6 +3,47 @@
 {% block title %}Panier{% endblock %}
 
 {% block body %}
-    <h1>Panier</h1>
-    <p>Votre panier est actuellement vide.</p>
+<div class="container mt-5">
+    <h2 class="text-center text-primary">Votre Panier</h2>
+
+    {% if cartItems is not empty %}
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>Article</th>
+                    <th>Type</th>
+                    <th>Prix</th>
+                    <th>Quantité</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cartItems %}
+                    <tr>
+                        <td>{{ item.item.title }}</td>
+                        <td>{{ item.type == 'course' ? 'Cours' : 'Leçon' }}</td>
+                        <td>{{ item.item.price }} €</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>
+                            <a href="{{ path('app_cart_remove', {'id': item.item.id}) }}" class="btn btn-danger btn-sm">
+                                Retirer
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="text-center mt-3">
+            <a href="{{ path('app_cart_clear') }}" class="btn btn-warning">Vider le panier</a>
+            <a href="{{ path('app_payment') }}" class="btn btn-success">Passer au paiement</a>
+        </div>
+    {% else %}
+        <p class="text-center mt-4">Votre panier est vide.</p>
+    {% endif %}
+
+    <div class="text-center mt-3">
+        <a href="{{ path('app_shop') }}" class="btn btn-secondary">Retour à la boutique</a>
+    </div>
+</div>
 {% endblock %}
