@@ -26,10 +26,8 @@
         <p>
             {% if course is defined %}
                 {{ course.description }}
-            {% elseif lesson is defined %}
-                {{ lesson.content }}
             {% else %}
-                Description non disponible.
+                Achetez la leçon pour voir son contenu.
             {% endif %}
         </p>
 
@@ -62,14 +60,25 @@
         {% endif %}
 
         <div class="text-center mt-4">
-            {% if course is defined %}
-                <a href="{{ path('app_cart_add', {'id': course.id, 'type': 'course'}) }}" class="btn btn-success">
-                    Ajouter au panier
-                </a>
-            {% elseif lesson is defined %}
-                <a href="{{ path('app_cart_add', {'id': lesson.id, 'type': 'lesson'}) }}" class="btn btn-success">
-                    Ajouter au panier
-                </a>
+            {% if app.user %}
+                {% if course is defined %}
+                    <a href="{{ path('app_cart_add', {'id': course.id, 'type': 'course'}) }}" class="btn btn-success">
+                        Ajouter au panier
+                    </a>
+                {% elseif lesson is defined %}
+                    <a href="{{ path('app_cart_add', {'id': lesson.id, 'type': 'lesson'}) }}" class="btn btn-success">
+                        Ajouter au panier
+                    </a>
+                {% endif %}
+            {% else %}
+                <p class="alert alert-warning">
+                    {% if course is defined %}
+                        Connectez-vous pour acheter ce cours.
+                    {% elseif lesson is defined %}
+                        Connectez-vous pour acheter cette leçon.
+                    {% endif %}
+                </p>
+                <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
             {% endif %}
         </div>
 

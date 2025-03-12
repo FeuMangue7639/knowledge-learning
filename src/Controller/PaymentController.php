@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Purchase;
 use App\Repository\CourseRepository;
 use App\Repository\LessonRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,7 +15,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
-
 
 class PaymentController extends AbstractController
 {
@@ -25,13 +26,11 @@ class PaymentController extends AbstractController
         UrlGeneratorInterface $urlGenerator,
         ParameterBagInterface $params
     ): JsonResponse {
-        // ✅ Utiliser la clé Stripe depuis les variables d'environnement
         Stripe::setApiKey($params->get('stripe_secret_key'));
 
         $cart = $session->get('cart', []);
         $lineItems = [];
 
-        // ✅ Parcourir le panier pour récupérer les articles
         foreach ($cart as $id => $item) {
             if ($item['type'] === 'course') {
                 $product = $courseRepository->find($id);
@@ -46,19 +45,17 @@ class PaymentController extends AbstractController
                         'product_data' => [
                             'name' => $product->getTitle(),
                         ],
-                        'unit_amount'  => $product->getPrice() * 100, // Convertir en centimes
+                        'unit_amount'  => $product->getPrice() * 100, 
                     ],
                     'quantity' => $item['quantity'],
                 ];
             }
         }
 
-        // ✅ Vérification si le panier est vide
         if (empty($lineItems)) {
             return new JsonResponse(['error' => 'Votre panier est vide.'], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        // ✅ Créer la session de paiement Stripe
         $checkoutSession = Session::create([
             'payment_method_types' => ['card'],
             'line_items'           => $lineItems,
@@ -71,10 +68,29 @@ class PaymentController extends AbstractController
     }
 
     #[Route('/payment/success', name: 'app_payment_success')]
-    public function success(SessionInterface $session): Response
+    public function success(SessionInterface $session, EntityManagerInterface $entityManager, CourseRepository $courseRepository, LessonRepository $lessonRepository): Response
     {
-        // ✅ Vider le panier après paiement réussi
+        $cart = $session->get('cart', []);
+        $user = $this->getUser();
+
+        foreach ($cart as $id => $item) {
+            $purchase = new Purchase();
+            $purchase->setUser($user);
+
+            if ($item['type'] === 'course') {
+                $course = $courseRepository->find($id);
+                $purchase->setCourse($course);
+            } else {
+                $lesson = $lessonRepository->find($id);
+                $purchase->setLesson($lesson);
+            }
+
+            $entityManager->persist($purchase);
+        }
+
+        $entityManager->flush();
         $session->remove('cart');
+
         return $this->render('cart/success.html.twig');
     }
 }

@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Leçon - {{ lesson.title }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary">{{ lesson.title }}</h2>
+    <p class="text-muted text-center">Cours : {{ lesson.course.title }}</p>
+
+    <div class="card mt-4 p-4">
+        <h4>Contenu de la leçon :</h4>
+        <p>{{ lesson.content }}</p>
+    </div>
+
+    {% if not lessonCompleted %}
+        <div class="text-center mt-4">
+            <a href="{{ path('app_my_lesson_validate', {'id': lesson.id}) }}" class="btn btn-success">
+                Valider la leçon
+            </a>
+        </div>
+    {% else %}
+        <p class="text-success text-center mt-4">✔ Leçon terminée</p>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{{ path('app_my_course_detail', {'id': lesson.course.id}) }}" class="btn btn-secondary">Retour au cours</a>
+    </div>
+</div>
+{% endblock %}
+
+
+
