@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Cours{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary">Mes Cours et Leçons</h2>
+
+    {% if purchases is empty %}
+        <p class="text-center text-muted">Vous n'avez encore acheté aucun cours.</p>
+    {% else %}
+        <div class="row">
+            {% for purchase in purchases %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ purchase.course.title }}</h5>
+            <p class="card-text">Ce cours contient {{ purchase.course.lessons|length }} leçons.</p>
+            <a href="{{ path('app_my_course_detail', {'id': purchase.course.id}) }}" class="btn btn-primary">Voir les leçons</a>
+
+            {% for certification in certifications %}
+                {% if certification.course.id == purchase.course.id %}
+                    <span class="badge bg-success">🏆 Certification obtenue</span>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+{% endfor %}
+
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{{ path('app_shop') }}" class="btn btn-secondary">Retour à la boutique</a>
+    </div>
+</div>
+{% endblock %}
+

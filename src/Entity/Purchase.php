@@ -18,14 +18,22 @@ class Purchase
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'purchases')]
-    #[ORM\JoinColumn(nullable: false)]
     private ?Course $course = null;
+
+    #[ORM\ManyToOne(inversedBy: 'purchases')]
+    private ?Lesson $lesson = null;
 
     #[ORM\Column(length: 255)]
     private ?string $status = 'pending';
 
-    #[ORM\Column(type: "datetime", options: ["default" => "CURRENT_TIMESTAMP"])]
-private ?\DateTimeInterface $createdAt = null;
+    #[ORM\Column(type: "datetime")]
+    private ?\DateTimeInterface $createdAt = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->status = 'pending';
+    }
 
     public function getId(): ?int
     {
@@ -40,7 +48,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function setUser(?User $user): static
     {
         $this->user = $user;
-
         return $this;
     }
 
@@ -52,7 +59,17 @@ private ?\DateTimeInterface $createdAt = null;
     public function setCourse(?Course $course): static
     {
         $this->course = $course;
+        return $this;
+    }
 
+    public function getLesson(): ?Lesson
+    {
+        return $this->lesson;
+    }
+
+    public function setLesson(?Lesson $lesson): static
+    {
+        $this->lesson = $lesson;
         return $this;
     }
 
@@ -64,7 +81,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -76,13 +92,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function setStatus(string $status): static
     {
         $this->status = $status;
-
         return $this;
     }
-
-    public function __construct()
-{
-    $this->createdAt = new \DateTimeImmutable();
-    $this->status = 'pending';
-}
 }
