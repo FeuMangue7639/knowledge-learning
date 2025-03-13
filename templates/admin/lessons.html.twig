@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gérer les Leçons{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary">Gestion des Leçons</h2>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Cours associé</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lesson in lessons %}
+                <tr>
+                    <td>{{ lesson.id }}</td>
+                    <td>{{ lesson.title }}</td>
+                    <td>{{ lesson.course.title }}</td>
+                    <td>
+                        <a href="{{ path('admin_lesson_delete', {'id': lesson.id}) }}" class="btn btn-danger btn-sm">Supprimer</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center mt-4 mb-4">
+    <a href="{{ path('admin_lesson_add') }}" class="btn btn-success">Ajouter une leçon</a>
+    </div>
+
+
+    <div class="text-center mt-4 mb-4">
+        <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">Retour</a>
+    </div>
+</div>
+{% endblock %}

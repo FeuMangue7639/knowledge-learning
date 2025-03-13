@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Tableau de bord{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary">Tableau de Bord - Backoffice</h2>
+
+    <div class="row text-center mt-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h5>Utilisateurs</h5>
+                <p class="fs-3">{{ users_count }}</p>
+                <a href="{{ path('admin_users') }}" class="btn btn-primary">Gérer</a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h5>Cours</h5>
+                <p class="fs-3">{{ courses_count }}</p>
+                <a href="{{ path('admin_courses') }}" class="btn btn-primary">Gérer</a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h5>Leçons</h5>
+                <p class="fs-3">{{ lessons_count }}</p>
+                <a href="{{ path('admin_lessons') }}" class="btn btn-primary">Gérer</a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h5>Achats</h5>
+                <p class="fs-3">{{ purchases_count }}</p>
+                <a href="{{ path('admin_purchases') }}" class="btn btn-primary">Gérer</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ path('app_home') }}" class="btn btn-secondary">Retour à l'accueil</a>
+    </div>
+</div>
+{% endblock %}

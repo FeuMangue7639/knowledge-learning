@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ asset('styles/register.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/global.css') }}"> {# ✅ Ajout d'un fichier CSS global si besoin #}
-    <link rel="icon" href="favicon.ico">
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
     {% block stylesheets %}{% endblock %}
 </head>
 
@@ -18,10 +18,15 @@
     <!-- HEADER -->
     <header class="bg-primary text-white py-3">
         <div class="container d-flex justify-content-between align-items-center">
-            <h1 class="m-0">Knowledge Learning</h1>
+            <a href="{{ path('app_home') }}">
+            <img src="{{ asset('images/logo.jpg') }}" alt="Knowledge Learning" height="50">
+            </a>
             <nav>
                 <ul class="nav">
                     <li class="nav-item"><a href="{{ path('app_home') }}" class="nav-link text-white">Accueil</a></li>
+                    {% if app.user and is_granted('ROLE_ADMIN') %}
+                        <li class="nav-item"><a href="{{ path('admin_dashboard') }}" class="nav-link text-warning">Admin</a></li>
+                    {% endif %}
                     {% if not app.user %}
                         <li class="nav-item"><a href="{{ path('app_register') }}" class="nav-link text-white">Inscription</a></li>
                         <li class="nav-item"><a href="{{ path('app_login') }}" class="nav-link text-white">Connexion</a></li>
