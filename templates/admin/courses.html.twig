@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gérer les Cours{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary">Gestion des Cours</h2>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+                <tr>
+                    <td>{{ course.id }}</td>
+                    <td>{{ course.title }}</td>
+                    <td>
+                        <a href="{{ path('admin_course_delete', {'id': course.id}) }}" class="btn btn-danger btn-sm">Supprimer</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center mt-4 mb-4">
+    <a href="{{ path('admin_course_add') }}" class="btn btn-success">Ajouter un cours</a>
+    </div>
+
+
+    <div class="text-center mt-4 mb-4">
+        <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">Retour</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gérer les Utilisateurs{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary">Gestion des Utilisateurs</h2>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.roles|join(', ') }}</td>
+                    <td>
+                        {% if 'ROLE_ADMIN' not in user.roles %}
+                            <a href="{{ path('admin_user_delete', {'id': user.id}) }}" class="btn btn-danger btn-sm">Supprimer</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center mt-4 mb-4">
+        <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">Retour</a>
+    </div>
+</div>
+{% endblock %}

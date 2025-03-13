@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gérer les Achats{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center text-primary">Gestion des Achats</h2>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Utilisateur</th>
+                <th>Cours/Leçon</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase in purchases %}
+                <tr>
+                    <td>{{ purchase.id }}</td>
+                    <td>{{ purchase.user.email }}</td>
+                    <td>
+                        {% if purchase.course %}
+                            Cours: {{ purchase.course.title }}
+                        {% elseif purchase.lesson %}
+                            Leçon: {{ purchase.lesson.title }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center mt-4 mb-4">
+        <a href="{{ path('admin_dashboard') }}" class="btn btn-secondary">Retour</a>
+    </div>
+</div>
+{% endblock %}
