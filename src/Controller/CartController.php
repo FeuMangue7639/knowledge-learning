@@ -67,7 +67,7 @@ class CartController extends AbstractController
             throw $this->createNotFoundException('Type inconnu.');
         }
 
-        // Ajouter ou incrémenter l'élément dans le panier
+        // Add or increment the item in the cart
         if (isset($cart[$id])) {
             $cart[$id]['quantity'] += 1;
         } else {
@@ -108,7 +108,7 @@ class CartController extends AbstractController
     #[Route('/cart/payment', name: 'app_payment')]
     public function payment(ParameterBagInterface $params): Response
     {
-        // Récupération de la clé publique Stripe depuis les paramètres
+        // Retrieving Stripe Public Key from Settings
         $stripePublicKey = $params->get('stripe_public_key');
 
         return $this->render('cart/payment.html.twig', [

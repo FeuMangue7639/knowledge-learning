@@ -53,7 +53,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->certifications = new ArrayCollection();
         $this->lessonValidations = new ArrayCollection();
         $this->roles = ["ROLE_USER"];
-        $this->createdAt = new \DateTimeImmutable(); // Assure l'initialisation correcte
+        $this->createdAt = new \DateTimeImmutable(); // Ensures proper initialization
+
+
         $this->isVerified = false;
     }
 

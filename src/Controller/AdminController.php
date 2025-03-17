@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin')]
-#[IsGranted('ROLE_ADMIN')] // ✅ Accès réservé aux administrateurs
+#[IsGranted('ROLE_ADMIN')] // ✅ Reserve acces to admin
 class AdminController extends AbstractController
 {
     #[Route('/', name: 'admin_dashboard')]
@@ -34,7 +34,7 @@ class AdminController extends AbstractController
         ]);
     }
 
-    // ✅ GESTION DES UTILISATEURS
+    // ✅ user management
     #[Route('/users', name: 'admin_users')]
     public function manageUsers(UserRepository $userRepository): Response
     {
@@ -55,7 +55,7 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('admin_users');
     }
 
-    // ✅ GESTION DES COURS
+    // ✅ Courses management
     #[Route('/courses', name: 'admin_courses')]
     public function manageCourses(CourseRepository $courseRepository): Response
     {
@@ -91,7 +91,7 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('admin_courses');
     }
 
-    // ✅ GESTION DES LEÇONS
+    // ✅ Lessons management
     #[Route('/lessons', name: 'admin_lessons')]
     public function manageLessons(LessonRepository $lessonRepository): Response
     {
@@ -127,7 +127,7 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('admin_lessons');
     }
 
-    // ✅ GESTION DES ACHATS
+    // ✅ purchases management
     #[Route('/purchases', name: 'admin_purchases')]
     public function managePurchases(PurchaseRepository $purchaseRepository): Response
     {
