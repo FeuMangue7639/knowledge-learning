@@ -31,6 +31,7 @@ class PaymentController extends AbstractController
         $cart = $session->get('cart', []);
         $lineItems = [];
 
+        // Iterate over cart items and prepare Stripe checkout line items.
         foreach ($cart as $id => $item) {
             if ($item['type'] === 'course') {
                 $product = $courseRepository->find($id);
@@ -52,10 +53,12 @@ class PaymentController extends AbstractController
             }
         }
 
+        // If cart is empty, return an error response.
         if (empty($lineItems)) {
             return new JsonResponse(['error' => 'Votre panier est vide.'], JsonResponse::HTTP_BAD_REQUEST);
         }
-
+        
+        // Create a Stripe checkout session.
         $checkoutSession = Session::create([
             'payment_method_types' => ['card'],
             'line_items'           => $lineItems,
@@ -88,9 +91,13 @@ class PaymentController extends AbstractController
             $entityManager->persist($purchase);
         }
 
+        // Save all purchases in the database.
         $entityManager->flush();
+
+        // Remove the cart from the session.
         $session->remove('cart');
 
+        // Render the success page.
         return $this->render('cart/success.html.twig');
     }
 }
