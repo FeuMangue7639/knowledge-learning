@@ -103,7 +103,7 @@ class CourseController extends AbstractController
             return $this->redirectToRoute('app_my_courses');
         }
 
-        // Vérifier si la leçon est déjà validée
+        // Check if the lesson is already validated
         $existingValidation = $lessonValidationRepository->findOneBy([
             'user' => $user,
             'lesson' => $lesson
@@ -118,7 +118,7 @@ class CourseController extends AbstractController
             $entityManager->flush();
         }
 
-        // Vérifier si toutes les leçons du cours sont validées
+        // Check if all the lessons in the course have been validated
         $course = $lesson->getCourse();
         if ($course) {
             $allLessonIds = array_map(fn($l) => $l->getId(), $course->getLessons()->toArray());

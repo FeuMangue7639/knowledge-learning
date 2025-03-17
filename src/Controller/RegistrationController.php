@@ -31,20 +31,20 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Vérifier si l'email existe déjà
+            // Check if email already exists
             $existingUser = $userRepository->findOneBy(['email' => $user->getEmail()]);
             if ($existingUser) {
                 $this->addFlash('danger', 'Cet email est déjà utilisé.');
                 return $this->redirectToRoute('app_register');
             }
 
-            // Hash du mot de passe
+            // Password hash
             $user->setPassword($userPasswordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Envoi de l'email de confirmation
+            // Sending confirmation email
             $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
                 (new TemplatedEmail())
                     ->from(new Address('coelhohugo2003@gmail.com', 'Hugo'))
@@ -53,10 +53,10 @@ class RegistrationController extends AbstractController
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
-            // ✅ Ajouter un message flash d'information
+            // ✅ Add a news flash message
             $this->addFlash('info', 'Votre compte a été créé avec succès ! Veuillez vérifier votre e-mail pour activer votre compte.');
 
-            return $this->redirectToRoute('app_login'); // Redirige vers la page de connexion
+            return $this->redirectToRoute('app_login'); // Redirects to the login page
         }
 
         return $this->render('registration/register.html.twig', [
@@ -67,7 +67,7 @@ class RegistrationController extends AbstractController
     #[Route('/verify/email', name: 'app_verify_email')]
     public function verifyUserEmail(Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Vérification si l'utilisateur est connecté
+        // Checking if the user is logged in
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_register');
         }

@@ -1,4 +1,4 @@
-/* PAGE D'INSCRIPTION */
+/* Login page */
 .container {
     height: 100vh; /* Prend toute la hauteur de l'écran */
     display: flex;
@@ -7,7 +7,7 @@
     background-color: #f1f8fc; /* Couleur douce */
 }
 
-/* CONTAINER DU FORMULAIRE */
+/* CONTAINER */
 .register-box {
     width: 400px;
     padding: 25px;
@@ -18,14 +18,14 @@
     border: 1px solid #ddd;
 }
 
-/* TITRE */
+/* Title */
 .register-box h2 {
     text-align: center;
     font-size: 24px;
     color: #0074c7;
 }
 
-/* CHAMPS DU FORMULAIRE */
+/* FORM */
 .register-box .form-group {
     margin-bottom: 15px;
 }
@@ -43,7 +43,7 @@
     font-size: 14px;
 }
 
-/* BOUTON DE SOUMISSION */
+/* Button */
 .register-box .btn-primary {
     width: 100%;
     padding: 10px;
@@ -60,14 +60,14 @@
     background-color: #00497c;
 }
 
-/* MESSAGE DE CONFIRMATION */
+/* MESSAGE */
 .alert-success {
     text-align: center;
     color: #82b864;
     font-weight: bold;
 }
 
-/* LIEN DE CONNEXION */
+/* LINKS */
 .register-box .already-registered {
     text-align: center;
     margin-top: 15px;
@@ -84,7 +84,7 @@
     text-decoration: underline;
 }
 
-/* ADAPTATION RESPONSIVE */
+/* RESPONSIVE */
 @media (max-width: 768px) {
     .register-box {
         width: 90%;

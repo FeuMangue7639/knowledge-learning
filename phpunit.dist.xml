@@ -30,7 +30,7 @@
     </source>
     
     <extensions>
-    <!-- No extensions defined -->
+        <extension class="PHPUnit\Extensions\Database\DatabaseExtension" />
     </extensions>
 
 </phpunit>
