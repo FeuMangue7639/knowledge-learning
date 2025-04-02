@@ -151,5 +151,5 @@ class CourseController extends AbstractController
 
         $this->addFlash('success', 'Leçon validée avec succès.');
         return $this->redirectToRoute('app_my_lesson_detail', ['id' => $id]);
-    }
+        }
 }
