@@ -39,7 +39,13 @@
             <a href="{{ path('app_payment') }}" class="btn btn-success">Passer au paiement</a>
         </div>
     {% else %}
-        <p class="text-center mt-4">Votre panier est vide.</p>
+        <!-- Texte "Votre panier est vide" avec taille et couleur modifiée -->
+        <p class="text-center mt-4 text-danger" style="font-size: 1.8rem; font-weight: bold;">Votre panier est vide.</p>
+        
+        <!-- Affichage de l'image avec plus d'espace autour -->
+        <div class="text-center mt-5 mb-5">
+            <img src="{{ asset('images/panier.png') }}" alt="Panier vide" class="img-fluid" style="max-width: 300px;">
+        </div>
     {% endif %}
 
     <div class="text-center mt-3">
