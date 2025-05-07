@@ -10,6 +10,78 @@
     <link rel="stylesheet" href="{{ asset('styles/login.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/global.css') }}"> {# ✅ Ajout d'un fichier CSS global si besoin #}
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
+
+    <!-- Styles personnalisés pour embellir le header et les effets visuels -->
+    <style>
+        /* Style pour le header */
+        header {
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Ajout d'une ombre */
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        /* Effet de survol sur le logo */
+        header a img {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        header a:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Style de la barre de navigation */
+        .nav-link {
+            font-weight: 500;
+            transition: color 0.3s ease, text-decoration 0.3s ease;
+        }
+
+        .nav-item:not(:last-child) {
+            margin-right: 25px;
+        }
+
+        /* Animation de survol du menu */
+        .nav-link.text-white {
+            position: relative;
+        }
+
+        .nav-link.text-white:hover::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #f1f1f1;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link.text-white:hover::before {
+            transform: scaleX(1);
+        }
+
+        /* Personnalisation du footer */
+        footer {
+            background: #222;
+            color: #aaa;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        footer p {
+            font-size: 14px;
+        }
+
+        /* Ajout de transitions pour les éléments du footer */
+        footer a {
+            text-decoration: none;
+            color: #aaa;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #fff;
+        }
+    </style>
+
     {% block stylesheets %}{% endblock %}
 </head>
 
@@ -19,7 +91,7 @@
     <header class="bg-primary text-white py-3">
         <div class="container d-flex justify-content-between align-items-center">
             <a href="{{ path('app_home') }}">
-            <img src="{{ asset('images/logo.jpg') }}" alt="Knowledge Learning" height="50">
+                <img src="{{ asset('images/logo.jpg') }}" alt="Knowledge Learning" height="50">
             </a>
             <nav>
                 <ul class="nav">

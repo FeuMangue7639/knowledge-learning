@@ -9,25 +9,29 @@
 
     <h3 class="mt-4">Leçons incluses :</h3>
     <ul class="list-group">
-    {% for lesson in course.lessons %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>{{ lesson.title }}</span>
-            {% if lesson in completedLessons %}
-                <span class="badge bg-success">✔ Terminé</span>
-            {% else %}
-                <a href="{{ path('app_my_lesson_detail', {'id': lesson.id}) }}" class="btn btn-success btn-sm">
-                    Lire la leçon
-                </a>
-            {% endif %}
-        </li>
-    {% endfor %}
-</ul>
+        {% for lesson in course.lessons %}
+            {% set isCompleted = lesson in completedLessons %}
+            {% set isAccessible = hasCourse or (lesson.id in accessibleLessonIds) %}
 
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ lesson.title }}</span>
+
+                {% if isCompleted %}
+                    <span class="badge bg-success">✔ Terminé</span>
+                {% elseif isAccessible %}
+                    <a href="{{ path('app_my_lesson_detail', {'id': lesson.id}) }}" class="btn btn-success btn-sm">Lire la leçon</a>
+                {% else %}
+                    <p>Leçon non acquise</p>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
 
     <div class="text-center mt-4">
         <a href="{{ path('app_my_courses') }}" class="btn btn-secondary">Retour à mes cours</a>
     </div>
 </div>
 {% endblock %}
+
 
 

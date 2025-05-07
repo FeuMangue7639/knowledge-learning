@@ -6,40 +6,33 @@
 <div class="container mt-5">
     <h2 class="text-center text-primary">Mes Cours et Leçons</h2>
 
-    {% if purchases is empty %}
-        <p class="text-center text-muted">Vous n'avez encore acheté aucun cours.</p>
+    {% if coursesWithLessons is empty %}
+        <p class="text-center text-muted">Vous n'avez encore acheté aucun cours ou leçon.</p>
     {% else %}
         <div class="row">
-            {% for purchase in purchases %}
-                {% if purchase.course is not null %}
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ purchase.course.title }}</h5>
-                            <p class="card-text">Ce cours contient {{ purchase.course.lessons|length }} leçons.</p>
-                            <a href="{{ path('app_my_course_detail', {'id': purchase.course.id}) }}" class="btn btn-primary">Voir les leçons</a>
+            {% for courseEntry in coursesWithLessons %}
+                {% set course = courseEntry.course %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ course.title }}</h5>
+                        <p class="card-text">
+                            Vous avez accès à {{ courseEntry.lessons|length }} / {{ course.lessons|length }} leçons.
+                        </p>
+                        <a href="{{ path('app_my_course_detail', {'id': course.id}) }}" class="btn btn-primary">Voir les leçons</a>
 
-                            {% for certification in certifications %}
-                                {% if certification.course.id == purchase.course.id %}
-                                    <span class="badge bg-success mt-2">Certification obtenue</span>
-                                {% endif %}
-                            {% endfor %}
-
-                            {% if certifications|filter(cert => cert.course.id == purchase.course.id)|length == 0 %}
-                                <p class="text-warning mt-2">Certification non encore obtenue.</p>
-                            {% endif %}
-
-                        </div>
+                        {% if certifications|filter(cert => cert.course.id == course.id)|length > 0 %}
+                            <span class="badge bg-success mt-2">Certification obtenue</span>
+                        {% else %}
+                            <p class="text-warning mt-2">Certification non encore obtenue.</p>
+                        {% endif %}
                     </div>
-                {% else %}
-                    <p>Un achat ne semble pas être lié à un cours valide.</p>
-                {% endif %}
+                </div>
             {% endfor %}
         </div>
     {% endif %}
 
-    <div class="text-center mt-4">
+    <div class="text-center mt-4" style="padding-bottom: 50px;">
         <a href="{{ path('app_shop') }}" class="btn btn-secondary">Retour à la boutique</a>
     </div>
 </div>
 {% endblock %}
-

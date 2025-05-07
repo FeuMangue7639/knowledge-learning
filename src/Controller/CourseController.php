@@ -13,9 +13,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
-use function array_map;
-use function count;
-
 
 class CourseController extends AbstractController
 {
@@ -32,22 +29,74 @@ class CourseController extends AbstractController
         $purchases = $purchaseRepository->findBy(['user' => $user]);
         $certifications = $certificationRepository->findBy(['user' => $user]);
 
+        $coursesWithLessons = [];
+
+        foreach ($purchases as $purchase) {
+            if ($course = $purchase->getCourse()) {
+                $courseId = $course->getId();
+                $coursesWithLessons[$courseId] = [
+                    'course' => $course,
+                    'lessons' => $course->getLessons()->toArray(),
+                    'purchasedDirectly' => true
+                ];
+            }
+
+            if ($lesson = $purchase->getLesson()) {
+                $course = $lesson->getCourse();
+                $courseId = $course->getId();
+
+                if (!isset($coursesWithLessons[$courseId])) {
+                    $coursesWithLessons[$courseId] = [
+                        'course' => $course,
+                        'lessons' => [],
+                        'purchasedDirectly' => false
+                    ];
+                }
+
+                if (!in_array($lesson, $coursesWithLessons[$courseId]['lessons'], true)) {
+                    $coursesWithLessons[$courseId]['lessons'][] = $lesson;
+                }
+            }
+        }
+
         return $this->render('courses/my_courses.html.twig', [
-            'purchases' => $purchases,
+            'coursesWithLessons' => $coursesWithLessons,
             'certifications' => $certifications,
         ]);
     }
 
     #[Route('/my-courses/course/{id}', name: 'app_my_course_detail')]
-    public function courseDetail(int $id, CourseRepository $courseRepository, PurchaseRepository $purchaseRepository, LessonValidationRepository $lessonValidationRepository): Response
-    {
+    public function courseDetail(
+        int $id,
+        CourseRepository $courseRepository,
+        PurchaseRepository $purchaseRepository,
+        LessonValidationRepository $lessonValidationRepository
+    ): Response {
         $user = $this->getUser();
         $course = $courseRepository->find($id);
-        $purchase = $purchaseRepository->findOneBy(['user' => $user, 'course' => $course]);
 
-        if (!$purchase) {
-            $this->addFlash('error', 'Vous n\'avez pas accès à ce cours.');
-            return $this->redirectToRoute('app_my_courses');
+        if (!$course) {
+            throw $this->createNotFoundException('Cours introuvable.');
+        }
+
+        $purchases = $purchaseRepository->findBy(['user' => $user]);
+
+        $hasCourse = false;
+        $accessibleLessonIds = [];
+
+        foreach ($purchases as $purchase) {
+            if ($purchase->getCourse()?->getId() === $course->getId()) {
+                $hasCourse = true;
+                foreach ($course->getLessons() as $lesson) {
+                    $accessibleLessonIds[] = $lesson->getId();
+                }
+                break;
+            }
+
+            if ($purchase->getLesson()?->getCourse()->getId() === $course->getId()) {
+                $lesson = $purchase->getLesson();
+                $accessibleLessonIds[] = $lesson->getId();
+            }
         }
 
         $completedLessons = $lessonValidationRepository->findBy([
@@ -58,6 +107,8 @@ class CourseController extends AbstractController
         return $this->render('courses/course_detail.html.twig', [
             'course' => $course,
             'completedLessons' => $completedLessons,
+            'hasCourse' => $hasCourse,
+            'accessibleLessonIds' => $accessibleLessonIds
         ]);
     }
 
@@ -103,7 +154,6 @@ class CourseController extends AbstractController
             return $this->redirectToRoute('app_my_courses');
         }
 
-        // Check if the lesson is already validated
         $existingValidation = $lessonValidationRepository->findOneBy([
             'user' => $user,
             'lesson' => $lesson
@@ -118,8 +168,8 @@ class CourseController extends AbstractController
             $entityManager->flush();
         }
 
-        // Check if all the lessons in the course have been validated
         $course = $lesson->getCourse();
+
         if ($course) {
             $allLessonIds = array_map(fn($l) => $l->getId(), $course->getLessons()->toArray());
 
@@ -151,5 +201,5 @@ class CourseController extends AbstractController
 
         $this->addFlash('success', 'Leçon validée avec succès.');
         return $this->redirectToRoute('app_my_lesson_detail', ['id' => $id]);
-        }
+    }
 }
