@@ -21,10 +21,12 @@ class EmailVerifier
 
     public function sendEmailConfirmation(string $verifyEmailRouteName, User $user, TemplatedEmail $email): void
     {
+        // ✅ IMPORTANT : ajoute l’ID explicitement dans les paramètres
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
             $verifyEmailRouteName,
-            (string) $user->getId(),
-            (string) $user->getEmail()
+            $user->getId(),
+            $user->getEmail(),
+            ['id' => $user->getId()] // ← clé critique
         );
 
         $context = $email->getContext();
@@ -42,7 +44,12 @@ class EmailVerifier
      */
     public function handleEmailConfirmation(Request $request, User $user): void
     {
-        $this->verifyEmailHelper->validateEmailConfirmationFromRequest($request, (string) $user->getId(), (string) $user->getEmail());
+        // ⚠️ Vérifie bien que l'ID est passé aussi ici
+        $this->verifyEmailHelper->validateEmailConfirmationFromRequest(
+            $request,
+            $user->getId(),
+            $user->getEmail()
+        );
 
         $user->setIsVerified(true);
 

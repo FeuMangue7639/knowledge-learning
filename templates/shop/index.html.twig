@@ -7,16 +7,24 @@
     <h2 class="text-center text-primary mb-4">Cours disponible</h2>
 
     <div class="row">
-        <!-- Affichage des cours -->
         {% for course in courses %}
             <div class="col-md-4">
                 <div class="card mb-4 shadow-sm">
+
+                    {% if course.image %}
+                        <img 
+                            src="{{ asset('images/' ~ course.image) }}" 
+                            alt="{{ course.title }}" 
+                            class="card-img-top img-fluid img-thumbnail"
+                            style="height: 200px; object-fit: cover;"
+                        >
+                    {% endif %}
+
                     <div class="card-body">
                         <h5 class="card-title">{{ course.title }}</h5>
                         <p class="card-text">{{ course.description|slice(0, 100) ~ '...' }}</p>
                         <p class="text-success fw-bold">{{ course.price }} €</p>
                         
-                        <!-- Boutons Voir le Cours et Ajouter au Panier -->
                         <a href="{{ path('app_course_detail', {'id': course.id}) }}" class="btn btn-info w-100 mb-2">
                             Voir le cours
                         </a>
@@ -33,7 +41,6 @@
     <h2 class="text-center text-primary my-4">Leçons Individuelles</h2>
 
     <div class="row">
-        <!-- Affichage des leçons -->
         {% for lesson in lessons %}
             <div class="col-md-4">
                 <div class="card mb-4 shadow-sm">
@@ -42,8 +49,7 @@
                         <p class="card-text">Achetez la leçon pour voir son contenu.</p>
                         <p class="text-success fw-bold">{{ lesson.price }} €</p>
                         
-                        <!-- Boutons Voir la Leçon et Ajouter au Panier -->
-                        <a href="{{ path('app_lesson_detail', {'id': lesson.id}) }}" class="btn btn-info w-100 mb-2">
+                        <a href="{{ path('app_shop_lesson_detail', {'id': lesson.id}) }}" class="btn btn-info w-100 mb-2">
                             Voir la leçon
                         </a>
                     </div>

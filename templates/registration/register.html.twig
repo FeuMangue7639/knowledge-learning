@@ -5,6 +5,14 @@
 {% block body %}
 <div class="container d-flex justify-content-center align-items-center min-vh-100">
     <div class="register-box p-4 rounded shadow bg-white w-50 border border-dark">
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} mt-2">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+
         <h2 class="text-center mb-4">S'inscrire</h2>
 
         {{ form_start(registrationForm) }}

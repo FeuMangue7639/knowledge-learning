@@ -49,7 +49,9 @@ class CartController extends AbstractController
     }
 
     #[Route('/cart/add/{id}/{type}', name: 'app_cart_add')]
-    public function add(int $id, string $type, SessionInterface $session, CourseRepository $courseRepository, LessonRepository $lessonRepository): Response
+    public function add(int $id, string $type, SessionInterface $session,
+     CourseRepository $courseRepository,
+      LessonRepository $lessonRepository): Response
     {
         $cart = $session->get('cart', []);
 

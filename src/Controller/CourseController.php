@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\LessonValidation;
 use App\Entity\Certification;
+use App\Entity\Lesson;
 use App\Repository\CourseRepository;
 use App\Repository\LessonRepository;
 use App\Repository\LessonValidationRepository;
@@ -202,4 +203,13 @@ class CourseController extends AbstractController
         $this->addFlash('success', 'Leçon validée avec succès.');
         return $this->redirectToRoute('app_my_lesson_detail', ['id' => $id]);
     }
+
+    #[Route('/shop/lesson/{id}', name: 'app_shop_lesson_detail')]
+public function publicLessonDetail(Lesson $lesson): Response
+{
+    return $this->render('shop/lesson_detail.html.twig', [
+        'lesson' => $lesson,
+    ]);
+}
+
 }
