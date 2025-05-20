@@ -4,12 +4,57 @@
 
 {% block body %}
 <div class="container mt-5">
-    <div class="card shadow p-4">
-        <h2 class="text-primary">{{ lesson.title }}</h2>
-        <p>{{ lesson.content }}</p>
+    <div class="card shadow p-4 mb-5 mx-auto" style="max-width: 720px;">
+
+        <!-- ✅ Titre de la leçon -->
+        <h2 class="text-primary"><u>{{ lesson.title }}</u></h2>
+
+        <!-- ✅ Contenu de la leçon -->
+        <p class="mt-3">Achetez la leçon pour voir son contenu.</p>
+
+        <!-- ✅ Prix -->
         <p class="text-success fw-bold">{{ lesson.price }} €</p>
 
-        <a href="{{ path('app_shop') }}" class="btn btn-secondary mt-3">Retour à la boutique</a>
+        <!-- ✅ Infos du cours parent -->
+        {% if lesson.course %}
+            <div class="mt-4">
+                <p class="mb-1"><strong>Cours associé :</strong> {{ lesson.course.title }}</p>
+
+                <!-- ✅ Image du cours -->
+                <a href="{{ path('app_course_detail', {'id': lesson.course.id}) }}">
+                    <img src="{{ asset('images/' ~ lesson.course.image) }}"
+                         alt="{{ lesson.course.title }}"
+                         class="img-thumbnail shadow-sm border"
+                         style="width: 120px; height: 80px; object-fit: cover;">
+                </a>
+
+                <!-- ✅ Lien vers le cours -->
+                <div class="mt-2">
+                    <a href="{{ path('app_course_detail', {'id': lesson.course.id}) }}"
+                       class="btn btn-outline-primary btn-sm">
+                        Voir le cours complet
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <p class="text-muted">Aucun cours associé à cette leçon.</p>
+        {% endif %}
+
+        <!-- ✅ Bouton d'achat centré -->
+        <div class="text-center mt-4">
+            <a href="{{ path('app_cart_add', {'id': lesson.id, 'type': 'lesson'}) }}"
+               class="btn btn-success">
+                Acheter cette leçon
+            </a>
+        </div>
+
+        <!-- ✅ Retour à la boutique -->
+        <div class="text-center mt-3">
+            <a href="{{ path('app_shop') }}" class="btn btn-secondary">
+                Retour à la boutique
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}
+

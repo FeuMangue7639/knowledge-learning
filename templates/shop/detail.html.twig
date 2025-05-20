@@ -4,18 +4,33 @@
 
 {% block body %}
 <div class="container mt-5">
-    <div class="card shadow p-4">
+    <div class="card shadow p-4 mb-5"> {# ✅ marge inférieure ajoutée ici #}
+
+        <!-- ✅ Titre souligné -->
         <h2 class="text-center text-primary">
-            {% if course is defined %}
-                {{ course.title }}
-            {% elseif lesson is defined %}
-                {{ lesson.title }}
-            {% else %}
-                Détail non disponible
-            {% endif %}
+            <u>
+                {% if course is defined %}
+                    {{ course.title }}
+                {% elseif lesson is defined %}
+                    {{ lesson.title }}
+                {% else %}
+                    Détail non disponible
+                {% endif %}
+            </u>
         </h2>
 
-        <p class="mt-3"><strong>Catégorie :</strong> 
+        <!-- ✅ Image encadrée avec bordure et ombre -->
+        {% if course is defined and course.image %}
+            <div class="text-center my-4">
+                <img src="{{ asset('images/' ~ course.image) }}" 
+                     alt="{{ course.title }}" 
+                     class="img-fluid border border-secondary rounded shadow-sm"
+                     style="max-height: 300px; object-fit: cover;">
+            </div>
+        {% endif %}
+
+        <!-- ✅ Catégorie -->
+        <p><strong>Catégorie :</strong> 
             {% if course is defined %}
                 {{ course.category }}
             {% else %}
@@ -23,6 +38,7 @@
             {% endif %}
         </p>
 
+        <!-- ✅ Description -->
         <p>
             {% if course is defined %}
                 {{ course.description }}
@@ -31,6 +47,7 @@
             {% endif %}
         </p>
 
+        <!-- ✅ Prix -->
         <p class="text-success fw-bold">
             Prix : 
             {% if course is defined %}
@@ -42,7 +59,7 @@
             {% endif %}
         </p>
 
-        <!-- ✅ Liste des leçons associées si on est sur un cours -->
+        <!-- ✅ Liste des leçons du cours -->
         {% if course is defined and course.lessons is not empty %}
             <h3 class="mt-4">Leçons incluses :</h3>
             <ul class="list-group">
@@ -59,6 +76,7 @@
             <p class="text-muted">Aucune leçon disponible pour ce cours.</p>
         {% endif %}
 
+        <!-- ✅ Bouton Ajouter au panier ou Connexion -->
         <div class="text-center mt-4">
             {% if app.user %}
                 {% if course is defined %}

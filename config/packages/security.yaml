@@ -14,6 +14,7 @@ security:
             security: false
 
         main:
+            user_checker: App\Security\UserEnabledChecker
             lazy: true
             provider: users_in_database  # 👈 Use the Database instead of "users_in_memory"
             form_login:

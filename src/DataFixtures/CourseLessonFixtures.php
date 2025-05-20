@@ -70,13 +70,25 @@ class CourseLessonFixtures extends Fixture
             ]
         ];
 
+        // 📸 Association des images par titre
+        $courseImages = [
+            "Cursus d'initiation à la guitare" => "guitare.jpg",
+            "Cursus d'initiation au piano" => "piano.jpg",
+            "Cursus d'initiation au développement web" => "developpeur.jpg",
+            "Cursus d'initiation au jardinage" => "jardinage.jpg",
+            "Cursus d'initiation à la cuisine" => "cuisine.jpg",
+            "Cursus d'initiation à l’art du dressage culinaire" => "dressage.jpg"
+        ];
+
         foreach ($data as $category => $courses) {
             foreach ($courses as $courseData) {
+                $title = $courseData["title"];
                 $course = new Course();
-                $course->setTitle($courseData["title"])
+                $course->setTitle($title)
                        ->setPrice($courseData["price"])
                        ->setCategory($category)
-                       ->setCreatedAt(new \DateTimeImmutable());
+                       ->setCreatedAt(new \DateTimeImmutable())
+                       ->setImage($courseImages[$title] ?? 'placeholder.jpg'); // 🔁 image par défaut si absente
 
                 $manager->persist($course);
 

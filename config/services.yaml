@@ -8,6 +8,8 @@ parameters:
     stripe_secret_key: 'sk_test_51QoZASFz4EN3lIGHUaJt5DaaNdkZqfcAerRVjdSAKMXbVJya0JSEwtHjPWcdK3rttDmZn8BcfFdWVdLDBUvrhpVk00Y1h23ouU'
 
 services:
+    App\Security\UserEnabledChecker:
+        tags: ['monolog.logger', 'security.user_checker']
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.

@@ -37,6 +37,17 @@
                 {% for course in courses %}
                     <div class="col-md-4">
                         <div class="card mb-4 shadow-sm">
+
+                            {# ✅ Image du cours si disponible #}
+                            {% if course.image %}
+                                <img 
+                                    src="{{ asset('images/' ~ course.image) }}" 
+                                    alt="{{ course.title }}" 
+                                    class="card-img-top img-fluid" 
+                                    style="height: 200px; object-fit: cover;"
+                                >
+                            {% endif %}
+
                             <div class="card-body">
                                 <h5 class="card-title">{{ course.title }}</h5>
                                 <p class="card-text">{{ course.description|slice(0, 100) ~ '...' }}</p>
@@ -54,3 +65,4 @@
         </div>
     </section>
 {% endblock %}
+
