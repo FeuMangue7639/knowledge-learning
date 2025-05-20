@@ -3,14 +3,29 @@
 {% block title %}Boutique{% endblock %}
 
 {% block body %}
+<style>
+    @media (min-width: 768px) {
+        .equal-height-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .equal-height-card .card-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    }
+</style>
+
 <div class="container mt-5">
     <h2 class="text-center text-primary mb-4">Cours disponible</h2>
 
     <div class="row">
         {% for course in courses %}
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
-
+            <div class="col-md-4 mb-4"> {# ✅ marge verticale ici #}
+                <div class="card shadow-sm equal-height-card">
                     {% if course.image %}
                         <img 
                             src="{{ asset('images/' ~ course.image) }}" 
@@ -24,7 +39,6 @@
                         <h5 class="card-title">{{ course.title }}</h5>
                         <p class="card-text">{{ course.description|slice(0, 100) ~ '...' }}</p>
                         <p class="text-success fw-bold">{{ course.price }} €</p>
-                        
                         <a href="{{ path('app_course_detail', {'id': course.id}) }}" class="btn btn-info w-100 mb-2">
                             Voir le cours
                         </a>
@@ -42,13 +56,12 @@
 
     <div class="row">
         {% for lesson in lessons %}
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
+            <div class="col-md-4 mb-4"> {# ✅ marge verticale ici aussi #}
+                <div class="card shadow-sm equal-height-card">
                     <div class="card-body">
                         <h5 class="card-title">{{ lesson.title }}</h5>
                         <p class="card-text">Achetez la leçon pour voir son contenu.</p>
                         <p class="text-success fw-bold">{{ lesson.price }} €</p>
-                        
                         <a href="{{ path('app_shop_lesson_detail', {'id': lesson.id}) }}" class="btn btn-info w-100 mb-2">
                             Voir la leçon
                         </a>
@@ -61,4 +74,3 @@
     </div>
 </div>
 {% endblock %}
-

@@ -3,6 +3,23 @@
 {% block title %}Knowledge Learning - Accueil{% endblock %}
 
 {% block body %}
+    <style>
+        @media (min-width: 768px) {
+            .equal-height-card {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
+            .equal-height-card .card-body {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+        }
+    </style>
+
     <!-- HERO SECTION -->
     <section class="hero bg-dark text-white text-center py-5">
         <div class="container">
@@ -35,10 +52,8 @@
             <h2 class="text-center mb-4 text-primary">Nos Cours Populaires</h2>
             <div class="row">
                 {% for course in courses %}
-                    <div class="col-md-4">
-                        <div class="card mb-4 shadow-sm">
-
-                            {# ✅ Image du cours si disponible #}
+                    <div class="col-md-4 mb-4"> {# ✅ marge verticale ajoutée ici #}
+                        <div class="card shadow-sm equal-height-card">
                             {% if course.image %}
                                 <img 
                                     src="{{ asset('images/' ~ course.image) }}" 
@@ -65,4 +80,3 @@
         </div>
     </section>
 {% endblock %}
-
