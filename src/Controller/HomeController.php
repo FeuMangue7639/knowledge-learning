@@ -12,12 +12,12 @@ final class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(CourseRepository $courseRepository): Response
     {
-        // Retrieve courses from the database
+        // Récupère le cours de la BDD
         $courses = $courseRepository->findAll();
 
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
-            'courses' => $courses, // Sending courses to the Twig view
+            'courses' => $courses, // Envoie le cours à la Vue Twig
         ]);
     }
 }

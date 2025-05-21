@@ -7,10 +7,22 @@ use App\Entity\Lesson;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
+/**
+ * Classe CourseLessonFixtures
+ * 
+ * Cette fixture permet de préremplir la base de données avec un ensemble
+ * de cours et de leçons. Elle est utile pour les tests et le développement.
+ */
 class CourseLessonFixtures extends Fixture
 {
+    /**
+     * Méthode appelée automatiquement par Doctrine pour charger les données
+     * de test dans la base de données.
+     */
     public function load(ObjectManager $manager): void
     {
+        // Données structurées par catégorie → chaque catégorie contient des cours,
+        // et chaque cours contient des leçons.
         $data = [
             "Musique" => [
                 [
@@ -70,7 +82,7 @@ class CourseLessonFixtures extends Fixture
             ]
         ];
 
-        // 📸 Association des images par titre
+        // Association des titres de cours avec des noms d’images.
         $courseImages = [
             "Cursus d'initiation à la guitare" => "guitare.jpg",
             "Cursus d'initiation au piano" => "piano.jpg",
@@ -80,30 +92,35 @@ class CourseLessonFixtures extends Fixture
             "Cursus d'initiation à l’art du dressage culinaire" => "dressage.jpg"
         ];
 
+        // Parcours des données pour créer les entités
         foreach ($data as $category => $courses) {
             foreach ($courses as $courseData) {
                 $title = $courseData["title"];
+
+                // Création du cours
                 $course = new Course();
                 $course->setTitle($title)
                        ->setPrice($courseData["price"])
                        ->setCategory($category)
                        ->setCreatedAt(new \DateTimeImmutable())
-                       ->setImage($courseImages[$title] ?? 'placeholder.jpg'); // 🔁 image par défaut si absente
+                       ->setImage($courseImages[$title] ?? 'placeholder.jpg'); // Image par défaut
 
-                $manager->persist($course);
+                $manager->persist($course); // Enregistrement du cours
 
+                // Création des leçons liées à ce cours
                 foreach ($courseData["lessons"] as $lessonData) {
                     $lesson = new Lesson();
                     $lesson->setTitle($lessonData["title"])
                            ->setPrice($lessonData["price"])
                            ->setCourse($course)
-                           ->setContent("Contenu de la leçon...");
+                           ->setContent("Contenu de la leçon..."); // Exemple de contenu par défaut
 
                     $manager->persist($lesson);
                 }
             }
         }
 
+        // Écriture des entités en base de données
         $manager->flush();
     }
 }
