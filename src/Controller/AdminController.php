@@ -20,9 +20,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin')]
-#[IsGranted('ROLE_ADMIN')] // ✅ Reserve acces to admin
+#[IsGranted('ROLE_ADMIN')] // Accès réservé aux utilisateurs ayant le rôle ADMIN
 class AdminController extends AbstractController
 {
+    /**
+     * Page d'accueil du dashboard admin
+     * Affiche le nombre total d'utilisateurs, de cours, de leçons et d'achats.
+     */
     #[Route('/', name: 'admin_dashboard')]
     public function index(UserRepository $userRepository, CourseRepository $courseRepository, LessonRepository $lessonRepository, PurchaseRepository $purchaseRepository): Response
     {
@@ -34,13 +38,20 @@ class AdminController extends AbstractController
         ]);
     }
 
-    // ✅ user management
+    /**
+     * Affiche la liste des utilisateurs
+     */
     #[Route('/users', name: 'admin_users')]
     public function manageUsers(UserRepository $userRepository): Response
     {
-        return $this->render('admin/users.html.twig', ['users' => $userRepository->findAll()]);
+        return $this->render('admin/users.html.twig', [
+            'users' => $userRepository->findAll(),
+        ]);
     }
 
+    /**
+     * Supprime un utilisateur (sauf s'il a le rôle ADMIN)
+     */
     #[Route('/users/delete/{id}', name: 'admin_user_delete')]
     public function deleteUser(User $user, EntityManagerInterface $entityManager): Response
     {
@@ -55,13 +66,21 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('admin_users');
     }
 
-    // ✅ Courses management
+    /**
+     * Affiche la liste des cours
+     */
     #[Route('/courses', name: 'admin_courses')]
     public function manageCourses(CourseRepository $courseRepository): Response
     {
-        return $this->render('admin/courses.html.twig', ['courses' => $courseRepository->findAll()]);
+        return $this->render('admin/courses.html.twig', [
+            'courses' => $courseRepository->findAll(),
+        ]);
     }
 
+    /**
+     * Permet d’ajouter un cours via un formulaire
+     * Traite l’upload d’image et l’enregistre dans /public/uploads/courses/
+     */
     #[Route('/courses/add', name: 'admin_course_add')]
     public function addCourse(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -70,10 +89,27 @@ class AdminController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('imageFile')->getData();
+
+            if ($imageFile) {
+                $newFilename = 'course_' . uniqid() . '.' . $imageFile->guessExtension();
+
+                // Déplace l'image dans le répertoire public/uploads/courses
+                $imageFile->move(
+                    $this->getParameter('kernel.project_dir') . '/public/uploads/courses',
+                    $newFilename
+                );
+
+                $course->setImage($newFilename);
+            } else {
+                // Utilise une image par défaut si aucune image n'est envoyée
+                $course->setImage('default.jpeg'); 
+            }
+
             $entityManager->persist($course);
             $entityManager->flush();
-            $this->addFlash('success', 'Cours ajouté avec succès !');
 
+            $this->addFlash('success', 'Cours ajouté avec succès !');
             return $this->redirectToRoute('admin_courses');
         }
 
@@ -82,6 +118,9 @@ class AdminController extends AbstractController
         ]);
     }
 
+    /**
+     * Supprime un cours
+     */
     #[Route('/courses/delete/{id}', name: 'admin_course_delete')]
     public function deleteCourse(Course $course, EntityManagerInterface $entityManager): Response
     {
@@ -91,13 +130,20 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('admin_courses');
     }
 
-    // ✅ Lessons management
+    /**
+     * Affiche toutes les leçons
+     */
     #[Route('/lessons', name: 'admin_lessons')]
     public function manageLessons(LessonRepository $lessonRepository): Response
     {
-        return $this->render('admin/lessons.html.twig', ['lessons' => $lessonRepository->findAll()]);
+        return $this->render('admin/lessons.html.twig', [
+            'lessons' => $lessonRepository->findAll(),
+        ]);
     }
 
+    /**
+     * Permet d’ajouter une leçon via un formulaire
+     */
     #[Route('/lessons/add', name: 'admin_lesson_add')]
     public function addLesson(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -109,7 +155,6 @@ class AdminController extends AbstractController
             $entityManager->persist($lesson);
             $entityManager->flush();
             $this->addFlash('success', 'Leçon ajoutée avec succès !');
-
             return $this->redirectToRoute('admin_lessons');
         }
 
@@ -118,6 +163,9 @@ class AdminController extends AbstractController
         ]);
     }
 
+    /**
+     * Supprime une leçon
+     */
     #[Route('/lessons/delete/{id}', name: 'admin_lesson_delete')]
     public function deleteLesson(Lesson $lesson, EntityManagerInterface $entityManager): Response
     {
@@ -127,10 +175,14 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('admin_lessons');
     }
 
-    // ✅ purchases management
+    /**
+     * Affiche les achats effectués par les utilisateurs
+     */
     #[Route('/purchases', name: 'admin_purchases')]
     public function managePurchases(PurchaseRepository $purchaseRepository): Response
     {
-        return $this->render('admin/purchases.html.twig', ['purchases' => $purchaseRepository->findAll()]);
+        return $this->render('admin/purchases.html.twig', [
+            'purchases' => $purchaseRepository->findAll(),
+        ]);
     }
 }

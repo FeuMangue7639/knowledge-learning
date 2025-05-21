@@ -9,7 +9,13 @@
             <div class="card shadow-sm p-4">
                 <h2 class="text-center text-primary mb-4">Ajouter un Cours</h2>
 
-                {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': ''}}) }}
+                {{ form_start(form, {
+                    'attr': {
+                        'class': 'needs-validation',
+                        'novalidate': '',
+                        'enctype': 'multipart/form-data'
+                    }
+                }) }}
 
                 <div class="mb-3">
                     <label class="form-label fw-bold">Titre du Cours</label>
@@ -22,11 +28,21 @@
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label fw-bold">Catégorie</label>
+                    {{ form_widget(form.category, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Informatique, Musique...'}}) }}
+                </div>
+
+                <div class="mb-3">
                     <label class="form-label fw-bold">Prix (€)</label>
                     {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 49.99'}}) }}
                 </div>
 
-                <div class="d-flex justify-content-between">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Image du cours</label>
+                    {{ form_widget(form.imageFile, {'attr': {'class': 'form-control'}}) }}
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
                     <a href="{{ path('admin_courses') }}" class="btn btn-secondary">Retour</a>
                     <button type="submit" class="btn btn-success">Ajouter</button>
                 </div>

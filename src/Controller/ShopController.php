@@ -11,6 +11,11 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class ShopController extends AbstractController
 {
+    /**
+     * Affiche la boutique avec tous les cours et toutes les leçons.
+     * Cette méthode récupère tous les enregistrements de l'entité Course et Lesson
+     * et les transmet au template Twig `shop/index.html.twig`.
+     */
     #[Route('/shop', name: 'app_shop')]
     public function index(EntityManagerInterface $entityManager): Response
     {
@@ -23,16 +28,22 @@ class ShopController extends AbstractController
         ]);
     }
 
+    /**
+     * Affiche les détails d'un cours ainsi que ses leçons associées.
+     */
     #[Route('/shop/course/{id}', name: 'app_course_detail')]
     public function courseDetail(Course $course): Response
     {
-        // ✅ We retrieve the lessons associated with the course
         return $this->render('shop/detail.html.twig', [
             'course' => $course,
-            'lessons' => $course->getLessons(), // Send the course lessons
+            'lessons' => $course->getLessons(), // Transmet les leçons du cours au template
         ]);
     }
 
+    /**
+     * Affiche les détails d'une leçon individuelle.
+     * Utile si une leçon est achetée séparément d’un cours.
+     */
     #[Route('/shop/lesson/{id}', name: 'app_lesson_detail')]
     public function lessonDetail(Lesson $lesson): Response
     {

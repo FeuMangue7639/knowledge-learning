@@ -14,11 +14,15 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class CartController extends AbstractController
 {
+    /**
+     * Affiche le contenu du panier
+     * - Récupère les éléments (cours ou leçons) présents dans la session
+     * - Reconstitue les objets complets depuis la base de données
+     */
     #[Route('/cart', name: 'app_cart')]
     public function index(SessionInterface $session, CourseRepository $courseRepository, LessonRepository $lessonRepository): Response
     {
-        $cart = $session->get('cart', []);
-
+        $cart = $session->get('cart', []); // Panier stocké en session
         $cartItems = [];
 
         foreach ($cart as $id => $item) {
@@ -48,13 +52,17 @@ class CartController extends AbstractController
         ]);
     }
 
+    /**
+     * Ajoute un élément (cours ou leçon) au panier
+     * - Vérifie que l'élément existe
+     * - L'ajoute ou incrémente la quantité si déjà présent
+     */
     #[Route('/cart/add/{id}/{type}', name: 'app_cart_add')]
-    public function add(int $id, string $type, SessionInterface $session,
-     CourseRepository $courseRepository,
-      LessonRepository $lessonRepository): Response
+    public function add(int $id, string $type, SessionInterface $session, CourseRepository $courseRepository, LessonRepository $lessonRepository): Response
     {
         $cart = $session->get('cart', []);
 
+        // Vérifie l'existence de l'élément en base
         if ($type === 'course') {
             $course = $courseRepository->find($id);
             if (!$course) {
@@ -69,7 +77,7 @@ class CartController extends AbstractController
             throw $this->createNotFoundException('Type inconnu.');
         }
 
-        // Add or increment the item in the cart
+        // Ajout ou incrémentation dans le panier
         if (isset($cart[$id])) {
             $cart[$id]['quantity'] += 1;
         } else {
@@ -80,11 +88,14 @@ class CartController extends AbstractController
         }
 
         $session->set('cart', $cart);
-        $this->addFlash('success', ucfirst($type) . ' ajouté(e) au panier !');
+        $this->addFlash('success', mb_convert_case($type, MB_CASE_TITLE, "UTF-8") . ' ajouté(e) au panier !');
 
         return $this->redirectToRoute('app_cart');
     }
 
+    /**
+     * Supprime un élément du panier
+     */
     #[Route('/cart/remove/{id}', name: 'app_cart_remove')]
     public function remove(int $id, SessionInterface $session): Response
     {
@@ -99,6 +110,9 @@ class CartController extends AbstractController
         return $this->redirectToRoute('app_cart');
     }
 
+    /**
+     * Vide complètement le panier
+     */
     #[Route('/cart/clear', name: 'app_cart_clear')]
     public function clear(SessionInterface $session): Response
     {
@@ -107,11 +121,14 @@ class CartController extends AbstractController
         return $this->redirectToRoute('app_cart');
     }
 
+    /**
+     * Affiche la page de paiement
+     * - Transmet la clé publique Stripe (récupérée via les paramètres)
+     */
     #[Route('/cart/payment', name: 'app_payment')]
     public function payment(ParameterBagInterface $params): Response
     {
-        // Retrieving Stripe Public Key from Settings
-        $stripePublicKey = $params->get('stripe_public_key');
+        $stripePublicKey = $params->get('stripe_public_key'); // Clé définie dans .env
 
         return $this->render('cart/payment.html.twig', [
             'stripe_public_key' => $stripePublicKey,

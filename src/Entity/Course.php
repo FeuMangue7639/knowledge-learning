@@ -8,46 +8,74 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Représente un cours composé de plusieurs leçons.
+ * Chaque cours appartient à une catégorie et peut être acheté par les utilisateurs.
+ */
 #[ORM\Entity(repositoryClass: CourseRepository::class)]
 class Course
 {
+    /**
+     * Identifiant unique du cours.
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    /**
+     * Titre du cours.
+     */
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    /**
+     * Prix du cours (en euros).
+     */
     #[ORM\Column]
     private ?float $price = null;
 
+    /**
+     * Catégorie du cours (ex. : Musique, Informatique, etc.).
+     */
     #[ORM\Column(length: 255)]
     private ?string $category = null;
 
+    /**
+     * Description détaillée du cours (facultative).
+     */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
+    /**
+     * Date de création du cours (initialisée automatiquement).
+     */
     #[ORM\Column(type: "datetime", options: ["default" => "CURRENT_TIMESTAMP"])]
-private ?\DateTimeInterface $createdAt = null;
+    private ?\DateTimeInterface $createdAt = null;
 
     /**
-     * @var Collection<int, Lesson>
+     * Liste des leçons appartenant à ce cours.
      */
     #[ORM\OneToMany(targetEntity: Lesson::class, mappedBy: 'course', orphanRemoval: true)]
     private Collection $lessons;
 
     /**
-     * @var Collection<int, Purchase>
+     * Liste des achats de ce cours par les utilisateurs.
      */
     #[ORM\OneToMany(targetEntity: Purchase::class, mappedBy: 'course', orphanRemoval: true)]
     private Collection $purchases;
 
     /**
-     * @var Collection<int, Certification>
+     * Liste des certifications obtenues pour ce cours.
      */
     #[ORM\OneToMany(targetEntity: Certification::class, mappedBy: 'course', orphanRemoval: true)]
     private Collection $certifications;
+
+    /**
+     * Nom du fichier image associé à ce cours.
+     */
+    #[ORM\Column(type: 'string', length: 255)]
+    private ?string $image = null;
 
     public function __construct()
     {
@@ -70,7 +98,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function setTitle(string $title): static
     {
         $this->title = $title;
-
         return $this;
     }
 
@@ -82,7 +109,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function setPrice(float $price): static
     {
         $this->price = $price;
-
         return $this;
     }
 
@@ -94,7 +120,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function setCategory(string $category): static
     {
         $this->category = $category;
-
         return $this;
     }
 
@@ -106,7 +131,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -118,12 +142,11 @@ private ?\DateTimeInterface $createdAt = null;
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
     /**
-     * @return Collection<int, Lesson>
+     * Retourne toutes les leçons associées à ce cours.
      */
     public function getLessons(): Collection
     {
@@ -143,7 +166,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function removeLesson(Lesson $lesson): static
     {
         if ($this->lessons->removeElement($lesson)) {
-            // set the owning side to null (unless already changed)
             if ($lesson->getCourse() === $this) {
                 $lesson->setCourse(null);
             }
@@ -153,7 +175,7 @@ private ?\DateTimeInterface $createdAt = null;
     }
 
     /**
-     * @return Collection<int, Purchase>
+     * Retourne tous les achats associés à ce cours.
      */
     public function getPurchases(): Collection
     {
@@ -173,7 +195,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function removePurchase(Purchase $purchase): static
     {
         if ($this->purchases->removeElement($purchase)) {
-            // set the owning side to null (unless already changed)
             if ($purchase->getCourse() === $this) {
                 $purchase->setCourse(null);
             }
@@ -183,7 +204,7 @@ private ?\DateTimeInterface $createdAt = null;
     }
 
     /**
-     * @return Collection<int, Certification>
+     * Retourne toutes les certifications associées à ce cours.
      */
     public function getCertifications(): Collection
     {
@@ -203,7 +224,6 @@ private ?\DateTimeInterface $createdAt = null;
     public function removeCertification(Certification $certification): static
     {
         if ($this->certifications->removeElement($certification)) {
-            // set the owning side to null (unless already changed)
             if ($certification->getCourse() === $this) {
                 $certification->setCourse(null);
             }
@@ -212,18 +232,20 @@ private ?\DateTimeInterface $createdAt = null;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', length: 255)]
-private ?string $image = null;
+    /**
+     * Retourne le nom du fichier image associé au cours.
+     */
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
 
-public function getImage(): ?string
-{
-    return $this->image;
-}
-
-public function setImage(string $image): self
-{
-    $this->image = $image;
-    return $this;
-}
-
+    /**
+     * Définit le nom du fichier image pour ce cours.
+     */
+    public function setImage(string $image): self
+    {
+        $this->image = $image;
+        return $this;
+    }
 }

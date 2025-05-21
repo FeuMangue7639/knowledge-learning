@@ -9,53 +9,92 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Représente un utilisateur de l'application.
+ * Un utilisateur peut avoir plusieurs rôles (utilisateur, admin...), faire des achats,
+ * obtenir des certifications et valider des leçons.
+ */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    /**
+     * Identifiant unique de l'utilisateur.
+     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    /**
+     * Nom d'utilisateur (doit être unique).
+     */
     #[ORM\Column(type: "string", length: 180, unique: true)]
     private ?string $username = null;
 
+    /**
+     * Adresse e-mail de l'utilisateur (doit être unique).
+     */
     #[ORM\Column(length: 255, unique: true)]
     private ?string $email = null;
 
+    /**
+     * Mot de passe encodé de l'utilisateur.
+     */
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    /**
+     * Statut indiquant si le compte a été vérifié par l'utilisateur (ex: via e-mail).
+     */
     #[ORM\Column(type: "boolean")]
     private ?bool $isVerified = false;
 
+    /**
+     * Tableau des rôles attribués à l'utilisateur (par défaut : ROLE_USER).
+     */
     #[ORM\Column(type: "json")]
     private array $roles = ["ROLE_USER"];
 
+    /**
+     * Date de création du compte utilisateur.
+     */
     #[ORM\Column(type: "datetime_immutable", options: ["default" => "CURRENT_TIMESTAMP"])]
     private ?\DateTimeImmutable $createdAt = null;
 
+    /**
+     * Adresse postale de l'utilisateur (optionnelle).
+     */
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $address = null;
 
+    /**
+     * Liste des achats effectués par l'utilisateur.
+     */
     #[ORM\OneToMany(targetEntity: Purchase::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $purchases;
 
+    /**
+     * Liste des certifications obtenues par l'utilisateur.
+     */
     #[ORM\OneToMany(targetEntity: Certification::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $certifications;
 
+    /**
+     * Liste des leçons validées par l'utilisateur.
+     */
     #[ORM\OneToMany(targetEntity: LessonValidation::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $lessonValidations;
 
+    /**
+     * Constructeur : initialise les collections et la date de création.
+     */
     public function __construct()
     {
         $this->purchases = new ArrayCollection();
         $this->certifications = new ArrayCollection();
         $this->lessonValidations = new ArrayCollection();
         $this->roles = ["ROLE_USER"];
-        $this->createdAt = new \DateTimeImmutable(); // Ensures proper initialization
-
-
+        $this->createdAt = new \DateTimeImmutable();
         $this->isVerified = false;
     }
 
@@ -141,11 +180,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Méthode obligatoire par UserInterface : identifiant unique pour la sécurité.
+     */
     public function getUserIdentifier(): string
     {
         return $this->email;
     }
 
+    /**
+     * Méthode obligatoire par PasswordAuthenticatedUserInterface.
+     * Permettrait de nettoyer les données sensibles si nécessaire.
+     */
     public function eraseCredentials(): void
     {
     }

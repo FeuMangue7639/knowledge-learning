@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PaymentController extends AbstractController
 {
+    /**
+     * Crée une session de paiement Stripe à partir du panier.
+     */
     #[Route('/checkout', name: 'app_stripe_payment', methods: ['POST'])]
     public function checkout(
         SessionInterface $session,
@@ -26,12 +29,13 @@ class PaymentController extends AbstractController
         UrlGeneratorInterface $urlGenerator,
         ParameterBagInterface $params
     ): JsonResponse {
+        // Configuration de la clé secrète Stripe
         Stripe::setApiKey($params->get('stripe_secret_key'));
 
         $cart = $session->get('cart', []);
         $lineItems = [];
 
-        // Iterate over cart items and prepare Stripe checkout line items.
+        // Parcours des articles du panier pour préparer les articles Stripe
         foreach ($cart as $id => $item) {
             if ($item['type'] === 'course') {
                 $product = $courseRepository->find($id);
@@ -46,19 +50,19 @@ class PaymentController extends AbstractController
                         'product_data' => [
                             'name' => $product->getTitle(),
                         ],
-                        'unit_amount'  => $product->getPrice() * 100, 
+                        'unit_amount'  => $product->getPrice() * 100, // Prix en centimes
                     ],
                     'quantity' => $item['quantity'],
                 ];
             }
         }
 
-        // If cart is empty, return an error response.
+        // Si le panier est vide, on retourne une erreur
         if (empty($lineItems)) {
             return new JsonResponse(['error' => 'Votre panier est vide.'], JsonResponse::HTTP_BAD_REQUEST);
         }
         
-        // Create a Stripe checkout session.
+        // Création de la session de paiement Stripe
         $checkoutSession = Session::create([
             'payment_method_types' => ['card'],
             'line_items'           => $lineItems,
@@ -67,15 +71,25 @@ class PaymentController extends AbstractController
             'cancel_url'           => $urlGenerator->generate('app_cart', [], UrlGeneratorInterface::ABSOLUTE_URL),
         ]);
 
+        // Réponse contenant l'ID de session Stripe à utiliser côté client
         return new JsonResponse(['id' => $checkoutSession->id]);
     }
 
+    /**
+     * Gère la redirection après un paiement réussi.
+     * Enregistre les achats dans la base de données et vide le panier.
+     */
     #[Route('/payment/success', name: 'app_payment_success')]
-    public function success(SessionInterface $session, EntityManagerInterface $entityManager, CourseRepository $courseRepository, LessonRepository $lessonRepository): Response
-    {
+    public function success(
+        SessionInterface $session,
+        EntityManagerInterface $entityManager,
+        CourseRepository $courseRepository,
+        LessonRepository $lessonRepository
+    ): Response {
         $cart = $session->get('cart', []);
         $user = $this->getUser();
 
+        // Parcours des éléments du panier et création d’un enregistrement d’achat
         foreach ($cart as $id => $item) {
             $purchase = new Purchase();
             $purchase->setUser($user);
@@ -91,13 +105,13 @@ class PaymentController extends AbstractController
             $entityManager->persist($purchase);
         }
 
-        // Save all purchases in the database.
+        // Sauvegarde des achats en base de données
         $entityManager->flush();
 
-        // Remove the cart from the session.
+        // Suppression du panier de la session
         $session->remove('cart');
 
-        // Render the success page.
+        // Affichage de la page de confirmation
         return $this->render('cart/success.html.twig');
     }
 }
