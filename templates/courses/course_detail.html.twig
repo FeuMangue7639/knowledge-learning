@@ -27,6 +27,14 @@
         {% endfor %}
     </ul>
 
+    {% for message in app.flashes('lesson_validated') %}
+    <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-4" style="max-width: 600px;">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+
+
     <div class="text-center mt-4">
         <a href="{{ path('app_my_courses') }}" class="btn btn-secondary">Retour à mes cours</a>
     </div>

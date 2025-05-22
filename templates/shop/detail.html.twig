@@ -78,27 +78,42 @@
 
         <!-- ✅ Bouton Ajouter au panier ou Connexion -->
         <div class="text-center mt-4">
-            {% if app.user %}
-                {% if course is defined %}
-                    <a href="{{ path('app_cart_add', {'id': course.id, 'type': 'course'}) }}" class="btn btn-success">
-                        Ajouter au panier
-                    </a>
-                {% elseif lesson is defined %}
-                    <a href="{{ path('app_cart_add', {'id': lesson.id, 'type': 'lesson'}) }}" class="btn btn-success">
-                        Ajouter au panier
-                    </a>
-                {% endif %}
+    {% if app.user %}
+        {% if course is defined %}
+            {% if hasCourse %}
+                <div class="d-flex justify-content-center my-4">
+                    <p class="alert alert-info text-center mb-0" style="max-width: 500px; width: 100%;">Vous possédez déjà ce cours.</p>
+                </div>
             {% else %}
-                <p class="alert alert-warning">
-                    {% if course is defined %}
-                        Connectez-vous pour acheter ce cours.
-                    {% elseif lesson is defined %}
-                        Connectez-vous pour acheter cette leçon.
-                    {% endif %}
-                </p>
-                <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+                <a href="{{ path('app_cart_add', {'id': course.id, 'type': 'course'}) }}" class="btn btn-success">
+                    Ajouter au panier
+                </a>
             {% endif %}
-        </div>
+        {% elseif lesson is defined %}
+            <a href="{{ path('app_cart_add', {'id': lesson.id, 'type': 'lesson'}) }}" class="btn btn-success">
+                Ajouter au panier
+            </a>
+        {% endif %}
+    {% else %}
+        <p class="alert alert-warning">
+            {% if course is defined %}
+                Connectez-vous pour acheter ce cours.
+            {% elseif lesson is defined %}
+                Connectez-vous pour acheter cette leçon.
+            {% endif %}
+        </p>
+        <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+    {% endif %}
+    </div> 
+
+    {% for message in app.flashes('warning') %}
+    <div class="alert alert-warning alert-dismissible fade show text-center mx-auto mt-4" role="alert" style="max-width: 600px;">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+    {% endfor %}
+
+
 
         <div class="text-center mt-3">
             <a href="{{ path('app_shop') }}" class="btn btn-secondary">Retour à la boutique</a>

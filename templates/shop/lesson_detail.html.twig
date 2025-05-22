@@ -40,13 +40,33 @@
             <p class="text-muted">Aucun cours associé à cette leçon.</p>
         {% endif %}
 
-        <!-- ✅ Bouton d'achat centré -->
-        <div class="text-center mt-4">
-            <a href="{{ path('app_cart_add', {'id': lesson.id, 'type': 'lesson'}) }}"
-               class="btn btn-success">
-                Acheter cette leçon
-            </a>
-        </div>
+        <!-- ✅ Bouton d'achat -->
+    {% if lesson is defined %}
+        {% if app.user %}
+            {% if hasLesson %}
+            <div class="d-flex justify-content-center my-4">
+                <p class="alert alert-info text-center mb-0" style="max-width: 500px; width: 100%;">Vous possédez déjà cette leçon.</p>
+            </div>
+        {% else %}
+            <div class="text-center mt-3">
+                <a href="{{ path('app_cart_add', {'id': lesson.id, 'type': 'lesson'}) }}" class="btn btn-success px-4" style="max-width: 200px; width: 100%;">
+                    Ajouter au panier
+                </a>
+            </div>
+        {% endif %}
+        {% else %}
+            <p class="alert alert-warning">Connectez-vous pour acheter cette leçon.</p>
+            <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+        {% endif %}
+    {% endif %}
+
+    {% for message in app.flashes('warning') %}
+    <div class="alert alert-warning alert-dismissible fade show text-center mx-auto mt-4" role="alert" style="max-width: 600px;">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+    {% endfor %}
+
 
         <!-- ✅ Retour à la boutique -->
         <div class="text-center mt-3">

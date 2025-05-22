@@ -6,6 +6,20 @@
 <div class="container mt-5">
     <h2 class="text-center text-primary mb-4">Mes Cours et Leçons</h2>
 
+    <style>
+        .trophy-animation {
+        font-size: 4rem;
+        animation: bounceIn 1s ease-out;
+            }
+        @keyframes bounceIn {
+        0% { transform: scale(0.3); opacity: 0; }
+        50% { transform: scale(1.1); opacity: 1; }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); }
+            }
+    </style>
+
+
     {% if coursesWithLessons is empty %}
         <p class="text-center text-muted">Vous n'avez encore acheté aucun cours ou leçon.</p>
     {% else %}
@@ -38,6 +52,17 @@
             {% endfor %}
         </div>
     {% endif %}
+
+    {% for message in app.flashes('trophy') %}
+    <div class="text-center mt-4">
+        <div class="trophy-animation mb-3">🏆</div>
+        <div class="alert alert-success alert-dismissible fade show mx-auto" style="max-width: 600px;">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    </div>
+{% endfor %}
+
 
     <div class="text-center mt-5 pb-4">
         <a href="{{ path('app_shop') }}" class="btn btn-secondary">Retour à la boutique</a>

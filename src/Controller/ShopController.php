@@ -30,15 +30,27 @@ class ShopController extends AbstractController
 
     /**
      * Affiche les détails d'un cours ainsi que ses leçons associées.
+     * Vérifie si l'utilisateur possède déjà le cours
      */
     #[Route('/shop/course/{id}', name: 'app_course_detail')]
-    public function courseDetail(Course $course): Response
-    {
-        return $this->render('shop/detail.html.twig', [
-            'course' => $course,
-            'lessons' => $course->getLessons(), // Transmet les leçons du cours au template
-        ]);
+public function courseDetail(Course $course, EntityManagerInterface $entityManager): Response
+{
+    $user = $this->getUser();
+    $hasCourse = false;
+
+    if ($user) {
+        $purchaseRepo = $entityManager->getRepository(\App\Entity\Purchase::class);
+        $purchase = $purchaseRepo->findOneBy(['user' => $user, 'course' => $course]);
+        $hasCourse = $purchase !== null;
     }
+
+    return $this->render('shop/detail.html.twig', [
+        'course' => $course,
+        'lessons' => $course->getLessons(),
+        'hasCourse' => $hasCourse
+    ]);
+}
+
 
     /**
      * Affiche les détails d'une leçon individuelle.
