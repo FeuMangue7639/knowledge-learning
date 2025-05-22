@@ -48,6 +48,14 @@
         </div>
     {% endif %}
 
+    {% for message in app.flashes('cart_success') %}
+    <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-4" style="max-width: 600px;">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+
+
     <div class="text-center mt-3">
         <a href="{{ path('app_shop') }}" class="btn btn-secondary">Retour à la boutique</a>
     </div>

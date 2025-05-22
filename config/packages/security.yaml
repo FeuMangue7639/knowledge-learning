@@ -3,7 +3,7 @@ security:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
     providers:
-        users_in_database: # 👈 Permet de charger les utilisateurs
+        users_in_database:
             entity:
                 class: App\Entity\User
                 property: email
@@ -16,19 +16,28 @@ security:
         main:
             user_checker: App\Security\UserEnabledChecker
             lazy: true
-            provider: users_in_database  # 👈 Utilise la BDD à la place de "users_in_memory"
+            provider: users_in_database
+
             form_login:
                 login_path: app_login
                 check_path: app_login
-                default_target_path: app_home  # Chemin de redirection après la connexion
+                default_target_path: app_home
 
-            logout:  
+            logout:
                 path: app_logout
-                target: app_home  # Chemin de redirection après la déconnexion
+                target: app_home
+
+            remember_me:
+                secret: '%kernel.secret%'        # Nécessaire pour la signature du cookie
+                lifetime: 604800                 # 7 jours sec
+                path: /                          # Portée du cookie
+                name: REMEMBERME                 # Nom du cookie
+                always_remember_me: false        # Respecte la case cochée dans le formulaire
 
     access_control:
-        - { path: ^/admin, roles: ROLE_ADMIN }  # 👈 Sécurise la page Admin 
-        - { path: ^/shop, roles: [ROLE_USER, ROLE_ADMIN] } # 👈 Securise la page boutique
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/shop, roles: [ROLE_USER, ROLE_ADMIN] }
+
 
 when@test:
     security:

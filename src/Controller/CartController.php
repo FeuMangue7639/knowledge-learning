@@ -11,20 +11,27 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * Contrôleur pour gérer les actions liées au panier :
+ * - Visualiser son contenu
+ * - Ajouter/Supprimer un élément
+ * - Passer au paiement
+ */
 class CartController extends AbstractController
 {
     /**
-     * Affiche le contenu du panier
-     * - Récupère les éléments (cours ou leçons) présents dans la session
-     * - Reconstitue les objets complets depuis la base de données
+     * Affiche le contenu du panier avec les cours et leçons ajoutés.
+     * Les objets sont récupérés en base de données à partir des IDs stockés en session.
      */
     #[Route('/cart', name: 'app_cart')]
     public function index(SessionInterface $session, CourseRepository $courseRepository, LessonRepository $lessonRepository): Response
     {
-        $cart = $session->get('cart', []); // Panier stocké en session
+        $cart = $session->get('cart', []); // Récupère le panier stocké dans la session
         $cartItems = [];
 
+        // Reconstitue les objets (course/lesson) à partir des IDs et du type
         foreach ($cart as $id => $item) {
             if ($item['type'] === 'course') {
                 $course = $courseRepository->find($id);
@@ -53,48 +60,61 @@ class CartController extends AbstractController
     }
 
     /**
-     * Ajoute un élément (cours ou leçon) au panier
-     * - Vérifie que l'élément existe
-     * - L'ajoute ou incrémente la quantité si déjà présent
+     * Ajoute un cours ou une leçon au panier.
+     * Si l'élément est déjà présent, affiche un message et redirige vers la page précédente.
      */
     #[Route('/cart/add/{id}/{type}', name: 'app_cart_add')]
-    public function add(int $id, string $type, SessionInterface $session, CourseRepository $courseRepository, LessonRepository $lessonRepository): Response
-    {
+    public function add(
+        int $id,
+        string $type,
+        SessionInterface $session,
+        CourseRepository $courseRepository,
+        LessonRepository $lessonRepository,
+        RequestStack $requestStack
+    ): Response {
         $cart = $session->get('cart', []);
 
-        // Vérifie l'existence de l'élément en base
+        // Initialise les libellés à afficher dans les messages selon le type
         if ($type === 'course') {
-            $course = $courseRepository->find($id);
-            if (!$course) {
+            $label = 'Ce cours';
+            $ajout = 'ajouté';
+            $entity = $courseRepository->find($id);
+            if (!$entity) {
                 throw $this->createNotFoundException('Le cours demandé n\'existe pas.');
             }
         } elseif ($type === 'lesson') {
-            $lesson = $lessonRepository->find($id);
-            if (!$lesson) {
+            $label = 'Cette leçon';
+            $ajout = 'ajoutée';
+            $entity = $lessonRepository->find($id);
+            if (!$entity) {
                 throw $this->createNotFoundException('La leçon demandée n\'existe pas.');
             }
         } else {
             throw $this->createNotFoundException('Type inconnu.');
         }
 
-        // Ajout ou incrémentation dans le panier
+        // Si l'élément est déjà dans le panier, affiche un message et retourne à la page précédente
         if (isset($cart[$id])) {
-            $cart[$id]['quantity'] += 1;
-        } else {
-            $cart[$id] = [
-                'type' => $type,
-                'quantity' => 1,
-            ];
+            $this->addFlash('warning', $label . ' est déjà dans votre panier.');
+            $referer = $requestStack->getCurrentRequest()->headers->get('referer');
+            return $this->redirect($referer ?: $this->generateUrl('app_shop'));
         }
 
+        // Ajout de l'élément au panier
+        $cart[$id] = [
+            'type' => $type,
+            'quantity' => 1,
+        ];
         $session->set('cart', $cart);
-        $this->addFlash('success', mb_convert_case($type, MB_CASE_TITLE, "UTF-8") . ' ajouté(e) au panier !');
+
+        // Message de confirmation affiché sur la page panier
+        $this->addFlash('cart_success', $label . ' a été ' . $ajout . ' au panier !');
 
         return $this->redirectToRoute('app_cart');
     }
 
     /**
-     * Supprime un élément du panier
+     * Supprime un élément du panier (cours ou leçon) via son ID.
      */
     #[Route('/cart/remove/{id}', name: 'app_cart_remove')]
     public function remove(int $id, SessionInterface $session): Response
@@ -104,31 +124,28 @@ class CartController extends AbstractController
         if (isset($cart[$id])) {
             unset($cart[$id]);
             $session->set('cart', $cart);
-            $this->addFlash('success', 'Élément retiré du panier.');
         }
 
         return $this->redirectToRoute('app_cart');
     }
 
     /**
-     * Vide complètement le panier
+     * Vide complètement le panier en supprimant la variable de session.
      */
     #[Route('/cart/clear', name: 'app_cart_clear')]
     public function clear(SessionInterface $session): Response
     {
         $session->remove('cart');
-        $this->addFlash('success', 'Panier vidé.');
         return $this->redirectToRoute('app_cart');
     }
 
     /**
-     * Affiche la page de paiement
-     * - Transmet la clé publique Stripe (récupérée via les paramètres)
+     * Affiche la page de paiement avec la clé publique Stripe.
      */
     #[Route('/cart/payment', name: 'app_payment')]
     public function payment(ParameterBagInterface $params): Response
     {
-        $stripePublicKey = $params->get('stripe_public_key'); // Clé définie dans .env
+        $stripePublicKey = $params->get('stripe_public_key');
 
         return $this->render('cart/payment.html.twig', [
             'stripe_public_key' => $stripePublicKey,

@@ -18,16 +18,14 @@ use Symfony\Component\HttpFoundation\Response;
 class CourseController extends AbstractController
 {
     /**
-     * Affiche tous les cours achetés ou auxquels l’utilisateur a accès
-     * Regroupe les cours achetés directement et ceux accessibles via des leçons individuelles.
+     * Affiche tous les cours que l'utilisateur a achetés ou auxquels il a accès via des leçons.
+     * Regroupe les achats de cours complets ou leçons individuelles.
      */
     #[Route('/my-courses', name: 'app_my_courses')]
     public function myCourses(PurchaseRepository $purchaseRepository, CertificationRepository $certificationRepository): Response
     {
         $user = $this->getUser();
-
         if (!$user) {
-            $this->addFlash('error', 'Vous devez être connecté pour voir vos cours.');
             return $this->redirectToRoute('app_login');
         }
 
@@ -36,9 +34,9 @@ class CourseController extends AbstractController
 
         $coursesWithLessons = [];
 
-        // Traitement des achats pour organiser les cours et leurs leçons associées
+        // Regroupe les cours et leçons achetés
         foreach ($purchases as $purchase) {
-            // Cours acheté directement
+            // Achat d’un cours complet
             if ($course = $purchase->getCourse()) {
                 $courseId = $course->getId();
                 $coursesWithLessons[$courseId] = [
@@ -48,11 +46,12 @@ class CourseController extends AbstractController
                 ];
             }
 
-            // Leçon achetée individuellement
+            // Achat d’une leçon individuelle
             if ($lesson = $purchase->getLesson()) {
                 $course = $lesson->getCourse();
                 $courseId = $course->getId();
 
+                // Crée une entrée si le cours n’est pas encore ajouté
                 if (!isset($coursesWithLessons[$courseId])) {
                     $coursesWithLessons[$courseId] = [
                         'course' => $course,
@@ -61,6 +60,7 @@ class CourseController extends AbstractController
                     ];
                 }
 
+                // Ajoute la leçon seulement si elle n’a pas encore été ajoutée
                 if (!in_array($lesson, $coursesWithLessons[$courseId]['lessons'], true)) {
                     $coursesWithLessons[$courseId]['lessons'][] = $lesson;
                 }
@@ -74,8 +74,8 @@ class CourseController extends AbstractController
     }
 
     /**
-     * Affiche les détails d’un cours et indique quelles leçons sont accessibles à l’utilisateur.
-     * Permet de savoir si l'utilisateur a acheté tout le cours ou seulement certaines leçons.
+     * Affiche les détails d’un cours spécifique.
+     * Montre les leçons accessibles et si l'utilisateur possède le cours complet.
      */
     #[Route('/my-courses/course/{id}', name: 'app_my_course_detail')]
     public function courseDetail(
@@ -95,8 +95,9 @@ class CourseController extends AbstractController
         $hasCourse = false;
         $accessibleLessonIds = [];
 
-        // Détermine si l'utilisateur a accès au cours complet ou seulement à des leçons
+        // Vérifie les leçons ou cours achetés
         foreach ($purchases as $purchase) {
+            // L'utilisateur a acheté tout le cours
             if ($purchase->getCourse()?->getId() === $course->getId()) {
                 $hasCourse = true;
                 foreach ($course->getLessons() as $lesson) {
@@ -105,12 +106,14 @@ class CourseController extends AbstractController
                 break;
             }
 
+            // L'utilisateur a acheté une leçon de ce cours
             if ($purchase->getLesson()?->getCourse()->getId() === $course->getId()) {
                 $lesson = $purchase->getLesson();
                 $accessibleLessonIds[] = $lesson->getId();
             }
         }
 
+        // Récupère toutes les leçons validées de l'utilisateur
         $completedLessons = $lessonValidationRepository->findBy([
             'user' => $user,
             'isCompleted' => true
@@ -125,8 +128,7 @@ class CourseController extends AbstractController
     }
 
     /**
-     * Affiche les détails d'une leçon.
-     * Vérifie que l’utilisateur a bien acheté la leçon ou le cours auquel elle appartient.
+     * Affiche le contenu d'une leçon, seulement si l'utilisateur l'a achetée ou a acheté le cours.
      */
     #[Route('/my-courses/lesson/{id}', name: 'app_my_lesson_detail')]
     public function lessonDetail(int $id, LessonRepository $lessonRepository, PurchaseRepository $purchaseRepository, LessonValidationRepository $lessonValidationRepository): Response
@@ -134,15 +136,15 @@ class CourseController extends AbstractController
         $user = $this->getUser();
         $lesson = $lessonRepository->find($id);
 
+        // Vérifie si l'utilisateur a accès à cette leçon
         $lessonPurchase = $purchaseRepository->findOneBy(['user' => $user, 'lesson' => $lesson]);
         $coursePurchase = $purchaseRepository->findOneBy(['user' => $user, 'course' => $lesson->getCourse()]);
 
-        // Vérifie les droits d’accès
         if (!$lessonPurchase && !$coursePurchase) {
-            $this->addFlash('error', 'Vous n\'avez pas accès à cette leçon.');
             return $this->redirectToRoute('app_my_courses');
         }
 
+        // Vérifie si la leçon est déjà validée
         $lessonCompleted = $lessonValidationRepository->findOneBy([
             'user' => $user,
             'lesson' => $lesson,
@@ -156,8 +158,8 @@ class CourseController extends AbstractController
     }
 
     /**
-     * Marque une leçon comme validée (terminée).
-     * Si toutes les leçons du cours sont validées, une certification est automatiquement créée.
+     * Marque une leçon comme validée par l'utilisateur.
+     * Si toutes les leçons du cours sont validées, crée une certification.
      */
     #[Route('/my-courses/lesson/{id}/validate', name: 'app_my_lesson_validate')]
     public function validateLesson(
@@ -171,16 +173,16 @@ class CourseController extends AbstractController
         $lesson = $lessonRepository->find($id);
 
         if (!$lesson) {
-            $this->addFlash('error', 'Leçon non trouvée.');
             return $this->redirectToRoute('app_my_courses');
         }
 
-        // On marque la leçon comme terminée seulement si elle ne l’a pas encore été
+        // Évite la double validation
         $existingValidation = $lessonValidationRepository->findOneBy([
             'user' => $user,
             'lesson' => $lesson
         ]);
 
+        // Crée la validation de la leçon si elle n'existe pas
         if (!$existingValidation) {
             $lessonValidation = new LessonValidation();
             $lessonValidation->setUser($user);
@@ -190,11 +192,11 @@ class CourseController extends AbstractController
             $entityManager->flush();
         }
 
-        // Vérifie si toutes les leçons du cours sont validées
         $course = $lesson->getCourse();
         if ($course) {
             $allLessonIds = array_map(fn($l) => $l->getId(), $course->getLessons()->toArray());
 
+            // Compte les validations de leçons du cours
             $completedLessons = $lessonValidationRepository->createQueryBuilder('lv')
                 ->select('COUNT(lv.id)')
                 ->where('lv.user = :user')
@@ -205,7 +207,7 @@ class CourseController extends AbstractController
                 ->getQuery()
                 ->getSingleScalarResult();
 
-            // Génère une certification si toutes les leçons sont complètes
+            // Si toutes les leçons sont validées, crée une certification
             if ($completedLessons == count($allLessonIds)) {
                 $existingCertification = $certificationRepository->findOneBy([
                     'user' => $user,
@@ -218,22 +220,39 @@ class CourseController extends AbstractController
                     $certification->setCourse($course);
                     $entityManager->persist($certification);
                     $entityManager->flush();
+
+                    // Message flash avec trophée
+                    $this->addFlash('trophy', '🏆 Félicitations ! Vous avez obtenu une certification pour ce cours.');
+                    return $this->redirectToRoute('app_my_courses');
                 }
             }
         }
 
-        $this->addFlash('success', 'Leçon validée avec succès.');
-        return $this->redirectToRoute('app_my_lesson_detail', ['id' => $id]);
+        // Message flash pour validation simple
+        $this->addFlash('lesson_validated', 'Leçon validée avec succès.');
+        return $this->redirectToRoute('app_my_course_detail', ['id' => $lesson->getCourse()->getId()]);
     }
 
     /**
-     * Affiche publiquement les détails d’une leçon dans la boutique
+     * Affiche la page publique de détail d’une leçon depuis la boutique.
+     * Vérifie si l'utilisateur possède déjà cette leçon ou le cours associé.
      */
     #[Route('/shop/lesson/{id}', name: 'app_shop_lesson_detail')]
-    public function publicLessonDetail(Lesson $lesson): Response
+    public function publicLessonDetail(Lesson $lesson, EntityManagerInterface $entityManager): Response
     {
+        $user = $this->getUser();
+        $hasLesson = false;
+
+        if ($user) {
+            $purchaseRepo = $entityManager->getRepository(\App\Entity\Purchase::class);
+            $lessonPurchase = $purchaseRepo->findOneBy(['user' => $user, 'lesson' => $lesson]);
+            $coursePurchase = $purchaseRepo->findOneBy(['user' => $user, 'course' => $lesson->getCourse()]);
+            $hasLesson = $lessonPurchase !== null || $coursePurchase !== null;
+        }
+
         return $this->render('shop/lesson_detail.html.twig', [
             'lesson' => $lesson,
+            'hasLesson' => $hasLesson,
         ]);
     }
 }
